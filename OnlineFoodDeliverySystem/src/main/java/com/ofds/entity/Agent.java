@@ -18,8 +18,20 @@ public class Agent {
 
     @Column(name = "agentPhoneNo")
     private String agentPhoneNo;
+    
+    @Column(name = "delId")
+    private String delId;
+    
+    
 
-    public String getAgentId() {
+	public Agent(String agentId, String agentName, String agentPhoneNo, String delId) {
+		this.agentId = agentId;
+		this.agentName = agentName;
+		this.agentPhoneNo = agentPhoneNo;
+		this.delId = delId;
+	}
+
+	public String getAgentId() {
         return agentId;
     }
 
@@ -42,4 +54,14 @@ public class Agent {
     public void setAgentPhoneNo(String agentPhoneNo) {
         this.agentPhoneNo = agentPhoneNo;
     }
+
+	public String getDelId() {
+		return delId;
+	}
+
+	public void setDelId(String delId) {
+		this.delId = delId;
+	}
+    
+    
 }

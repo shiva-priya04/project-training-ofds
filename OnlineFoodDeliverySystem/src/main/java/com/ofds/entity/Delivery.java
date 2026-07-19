@@ -26,8 +26,19 @@ public class Delivery {
 
     @Column(name = "estimatedTimeOfArrival")
     private LocalDateTime estimatedTimeOfArrival;
+    
+    
 
-    public String getDelId() {
+    public Delivery(String delId, String orderId, String agentId, String delStatus,
+			LocalDateTime estimatedTimeOfArrival) {
+		this.delId = delId;
+		this.orderId = orderId;
+		this.agentId = agentId;
+		this.delStatus = delStatus;
+		this.estimatedTimeOfArrival = estimatedTimeOfArrival;
+	}
+
+	public String getDelId() {
         return delId;
     }
 
