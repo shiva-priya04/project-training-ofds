@@ -1,38 +1,57 @@
 package com.ofds.entity;
 
-import jakarta.persistence.*;
+import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "orders")
 public class Orders {
+	
+	@Id
+	@Column(name = "orderId")
+	private String orderId;
+	
+	@Column(name = "customerId")
+	private String customerId;
+	
+	@Column(name = "orderStatus")
+	private String orderStatus;
+	
+	@Column(name = "totalAmt")
+	private Double totalAmt;
+	
+	@ManyToOne
+	@JoinColumn(name = "resId")
+	private Restaurant restaurant;
+	
+	@ManyToMany
+	@JoinTable(
+			name = "orders_menu", 
+			joinColumns = @JoinColumn(name = "orderId"), 
+			inverseJoinColumns = @JoinColumn(name = "menuItemId"))
+	private List<MenuItem> menus;
+	
+	public Orders() {
+		
+	}
 
-    @Id
-    @Column(name = "orderId")
-    private String orderId;
-
-    @Column(name = "customerId")
-    private String customerId;
-
-    @Column(name = "resId")
-    private String restaurantId;
-
-    @Column(name = "orderStatus")
-    private String status;
-
-    @Column(name = "totalAmt")
-    private double totalAmount;
-
-    public Orders() {
-    }
-
-    public Orders(String orderId, String customerId, String restaurantId,
-                 String status, double totalAmount) {
-        this.orderId = orderId;
-        this.customerId = customerId;
-        this.restaurantId = restaurantId;
-        this.status = status;
-        this.totalAmount = totalAmount;
-    }
+	public Orders(String orderId, String customerId, String orderStatus, Double totalAmt, Restaurant restaurant,
+			List<MenuItem> menus) {
+		this.orderId = orderId;
+		this.customerId = customerId;
+		this.orderStatus = orderStatus;
+		this.totalAmt = totalAmt;
+		this.restaurant = restaurant;
+		this.menus = menus;
+	}
 
 	public String getOrderId() {
 		return orderId;
@@ -50,30 +69,35 @@ public class Orders {
 		this.customerId = customerId;
 	}
 
-	public String getRestaurantId() {
-		return restaurantId;
+	public String getOrderStatus() {
+		return orderStatus;
 	}
 
-	public void setRestaurantId(String restaurantId) {
-		this.restaurantId = restaurantId;
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
 	}
 
-	public String getStatus() {
-		return status;
+	public Double getTotalAmt() {
+		return totalAmt;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setTotalAmt(Double totalAmt) {
+		this.totalAmt = totalAmt;
 	}
 
-	public double getTotalAmount() {
-		return totalAmount;
+	public Restaurant getRestaurant() {
+		return restaurant;
 	}
 
-	public void setTotalAmount(double totalAmount) {
-		this.totalAmount = totalAmount;
+	public void setRestaurant(Restaurant restaurant) {
+		this.restaurant = restaurant;
 	}
 
-    // Getters and Setters
-    
+	public List<MenuItem> getMenus() {
+		return menus;
+	}
+
+	public void setMenus(List<MenuItem> menus) {
+		this.menus = menus;
+	}
 }

@@ -1,39 +1,50 @@
 package com.ofds.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "menu_item")
+@Table(name = "menu")
 public class MenuItem {
+	
+	@Id
+	@Column(name = "itemId")
+	private String itemId;
+	
+	@Column(name = "itemName")
+	private String itemName;
+	
+	@Column(name = "descriptions")
+	private String description;
+	
+	@Column(name = "price")
+	private double price;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "resId", referencedColumnName = "resId")
+	private Restaurant restaurant;
+	
+	@ManyToMany(mappedBy = "menus")
+	private List<Orders> orders;
+	
+	public MenuItem(){
+		
+	}
 
-    @Id
-    @Column(name = "itemId")
-    private String itemId;
-
-    @Column(name = "itemName")
-    private String itemName;
-
-    @Column(name = "description")
-    private String description;
-
-    @Column(name = "price")
-    private double price;
-
-    @Column(name = "resId")
-    private String restaurantId;
-
-    public MenuItem() {
-    }
-
-	public MenuItem(String itemId, String itemName, String description, double price, String restaurantId) {
+	public MenuItem(String itemId, String itemName, String description, double price, Restaurant restaurant) {
 		this.itemId = itemId;
 		this.itemName = itemName;
 		this.description = description;
 		this.price = price;
-		this.restaurantId = restaurantId;
+		this.restaurant = restaurant;
 	}
 
 	public String getItemId() {
@@ -68,14 +79,14 @@ public class MenuItem {
 		this.price = price;
 	}
 
-	public String getRestaurantId() {
-		return restaurantId;
+	public Restaurant getRestaurant() {
+		return restaurant;
 	}
 
-	public void setRestaurantId(String restaurantId) {
-		this.restaurantId = restaurantId;
+	public void setRestaurant(Restaurant restaurant) {
+		this.restaurant = restaurant;
 	}
-    
 	
-    
+	
+
 }
