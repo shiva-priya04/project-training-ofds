@@ -33,4 +33,12 @@ public class AgentServiceImpl implements AgentService {
     public void deleteAgent(String agentId) {
         agentRepository.deleteById(agentId);
     }
+    
+    @Override
+    public List<String> getCustomerAddresses(String agentId) {
+
+        Agent agent = agentRepository.findById(agentId).orElseThrow(() -> new RuntimeException("Agent not found"));
+
+        return agent.getDeliveries().stream().map(delivery ->delivery.getOrder().getCustomer().getCustomerAddress()).toList();
+    }
 }

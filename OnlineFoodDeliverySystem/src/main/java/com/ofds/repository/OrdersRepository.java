@@ -10,10 +10,10 @@ import com.ofds.entity.Orders;
 @Repository
 public interface OrdersRepository extends JpaRepository<Orders, String> {
 	
-    List<Orders> findByCustomerId(String customerId);
-	
 	List<Orders> findByOrderStatus(String orderStatus);
 	
 	List<Orders> findByRestaurantResId(String resId);
+	
+	List<Orders> findByCustomerCustomerId(String customerId);
 
 }

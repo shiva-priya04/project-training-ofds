@@ -1,8 +1,11 @@
 package com.ofds.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -19,16 +22,19 @@ public class Agent {
     @Column(name = "agentPhoneNo")
     private String agentPhoneNo;
     
-    @Column(name = "delId")
-    private String delId;
-    
+    @OneToMany(mappedBy = "agent")
+    private List<Delivery> deliveries;
     
 
-	public Agent(String agentId, String agentName, String agentPhoneNo, String delId) {
+    public Agent() {
+    	
+    }
+    
+	public Agent(String agentId, String agentName, String agentPhoneNo, List<Delivery> deliveries) {
 		this.agentId = agentId;
 		this.agentName = agentName;
 		this.agentPhoneNo = agentPhoneNo;
-		this.delId = delId;
+		this.deliveries = deliveries;
 	}
 
 	public String getAgentId() {
@@ -55,12 +61,12 @@ public class Agent {
         this.agentPhoneNo = agentPhoneNo;
     }
 
-	public String getDelId() {
-		return delId;
+    public List<Delivery> getDeliveries() {
+		return deliveries;
 	}
 
-	public void setDelId(String delId) {
-		this.delId = delId;
+	public void setDeliveries(List<Delivery> deliveries) {
+		this.deliveries = deliveries;
 	}
     
     

@@ -2,6 +2,8 @@ package com.ofds.entity;
 
 import java.util.List;
 
+//import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -19,8 +21,10 @@ public class Orders {
 	@Column(name = "orderId")
 	private String orderId;
 	
-	@Column(name = "customerId")
-	private String customerId;
+	//@JsonIgnore
+	@ManyToOne
+	@JoinColumn(name = "customerId")
+	private Customer customer;
 	
 	@Column(name = "orderStatus")
 	private String orderStatus;
@@ -28,6 +32,7 @@ public class Orders {
 	@Column(name = "totalAmt")
 	private Double totalAmt;
 	
+	//@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "resId")
 	private Restaurant restaurant;
@@ -43,15 +48,16 @@ public class Orders {
 		
 	}
 
-	public Orders(String orderId, String customerId, String orderStatus, Double totalAmt, Restaurant restaurant,
+	public Orders(String orderId, Customer customer, String orderStatus, Double totalAmt, Restaurant restaurant,
 			List<MenuItem> menus) {
 		this.orderId = orderId;
-		this.customerId = customerId;
+		this.customer = customer;
 		this.orderStatus = orderStatus;
 		this.totalAmt = totalAmt;
 		this.restaurant = restaurant;
 		this.menus = menus;
 	}
+
 
 	public String getOrderId() {
 		return orderId;
@@ -61,12 +67,12 @@ public class Orders {
 		this.orderId = orderId;
 	}
 
-	public String getCustomerId() {
-		return customerId;
+	public Customer getCustomer() {
+		return customer;
 	}
 
-	public void setCustomerId(String customerId) {
-		this.customerId = customerId;
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 	public String getOrderStatus() {

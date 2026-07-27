@@ -11,6 +11,8 @@ public interface AgentService {
     List<Agent> getAllAgents();
 
     Agent getAgentById(String agentId);
+    
+    List<String> getCustomerAddresses(String agentId);
 
     void deleteAgent(String agentId);
 }

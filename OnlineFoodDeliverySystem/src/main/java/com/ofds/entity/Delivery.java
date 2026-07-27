@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -15,12 +18,14 @@ public class Delivery {
     @Column(name = "delId")
     private String delId;
 
-    @Column(name = "orderId")
-    private String orderId;
-
-    @Column(name = "agentId")
-    private String agentId;
-
+    @OneToOne
+    @JoinColumn(name = "orderId")
+    private Orders order;
+    
+    @ManyToOne
+    @JoinColumn(name = "agentId")
+    private Agent agent;
+    
     @Column(name = "delStatus")
     private String delStatus;
 
@@ -29,13 +34,17 @@ public class Delivery {
     
     
 
-    public Delivery(String delId, String orderId, String agentId, String delStatus,
+    public Delivery(String delId, Orders order, Agent agent, String delStatus,
 			LocalDateTime estimatedTimeOfArrival) {
 		this.delId = delId;
-		this.orderId = orderId;
-		this.agentId = agentId;
+		this.order = order;
+		this.agent = agent;
 		this.delStatus = delStatus;
 		this.estimatedTimeOfArrival = estimatedTimeOfArrival;
+	}
+
+	public Delivery() {
+		
 	}
 
 	public String getDelId() {
@@ -46,23 +55,23 @@ public class Delivery {
         this.delId = delId;
     }
 
-    public String getOrderId() {
-        return orderId;
-    }
+    public Orders getOrder() {
+		return order;
+	}
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
+	public void setOrder(Orders order) {
+		this.order = order;
+	}
 
-    public String getAgentId() {
-        return agentId;
-    }
+	public Agent getAgent() {
+		return agent;
+	}
 
-    public void setAgentId(String agentId) {
-        this.agentId = agentId;
-    }
+	public void setAgent(Agent agent) {
+		this.agent = agent;
+	}
 
-    public String getDelStatus() {
+	public String getDelStatus() {
         return delStatus;
     }
 

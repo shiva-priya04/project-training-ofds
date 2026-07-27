@@ -6,8 +6,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ofds.entity.Customer;
 import com.ofds.entity.MenuItem;
 import com.ofds.entity.Orders;
+import com.ofds.repository.CustomerRepository;
 import com.ofds.repository.MenuItemRepository;
 import com.ofds.repository.OrdersRepository;
 
@@ -16,6 +18,9 @@ public class OrdersServiceImpl implements OrdersService {
 	
 	@Autowired
 	private OrdersRepository ordersRepository;
+	
+	@Autowired
+	private CustomerRepository customerRepository;
 	
 	@Autowired
 	private MenuItemRepository menuItemRepository;
@@ -29,6 +34,16 @@ public class OrdersServiceImpl implements OrdersService {
 
         totalAmt += dbItem.getPrice();
 		}
+		
+		String custId = order.getCustomer().getCustomerId();
+
+	    Customer customer =
+	            customerRepository.findById(custId)
+	                    .orElseThrow(() ->
+	                            new RuntimeException("Customer not found"));
+
+	    order.setCustomer(customer);
+		
 		order.setTotalAmt(totalAmt);
 		return ordersRepository.save(order);
 	}
@@ -60,8 +75,7 @@ public class OrdersServiceImpl implements OrdersService {
 
 	@Override
 	public List<Orders> getOrdersByCustomerId(String customerId) {
-		
-		return ordersRepository.findByCustomerId(customerId);
+	    return ordersRepository.findByCustomerCustomerId(customerId);
 	}
 
 	@Override
