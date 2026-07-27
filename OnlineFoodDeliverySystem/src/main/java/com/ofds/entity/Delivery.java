@@ -1,8 +1,9 @@
 package com.ofds.entity;
 
 import java.time.LocalDateTime;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -15,39 +16,22 @@ import jakarta.persistence.Table;
 public class Delivery {
 
     @Id
-    @Column(name = "delId")
+    @NotBlank(message = "Delivery ID is required")
     private String delId;
+    @NotBlank(message = "Delivery Status is required")
+    private String delStatus;
+    @NotNull(message = "Estimated Time Of Arrival is required")
+    private LocalDateTime estimatedTimeOfArrival;
+
+    @ManyToOne
+    @JoinColumn(name = "agentId")
+    private Agent agent;
 
     @OneToOne
     @JoinColumn(name = "orderId")
     private Orders order;
-    
-    @ManyToOne
-    @JoinColumn(name = "agentId")
-    private Agent agent;
-    
-    @Column(name = "delStatus")
-    private String delStatus;
 
-    @Column(name = "estimatedTimeOfArrival")
-    private LocalDateTime estimatedTimeOfArrival;
-    
-    
-
-    public Delivery(String delId, Orders order, Agent agent, String delStatus,
-			LocalDateTime estimatedTimeOfArrival) {
-		this.delId = delId;
-		this.order = order;
-		this.agent = agent;
-		this.delStatus = delStatus;
-		this.estimatedTimeOfArrival = estimatedTimeOfArrival;
-	}
-
-	public Delivery() {
-		
-	}
-
-	public String getDelId() {
+    public String getDelId() {
         return delId;
     }
 
@@ -55,23 +39,7 @@ public class Delivery {
         this.delId = delId;
     }
 
-    public Orders getOrder() {
-		return order;
-	}
-
-	public void setOrder(Orders order) {
-		this.order = order;
-	}
-
-	public Agent getAgent() {
-		return agent;
-	}
-
-	public void setAgent(Agent agent) {
-		this.agent = agent;
-	}
-
-	public String getDelStatus() {
+    public String getDelStatus() {
         return delStatus;
     }
 
@@ -86,4 +54,32 @@ public class Delivery {
     public void setEstimatedTimeOfArrival(LocalDateTime estimatedTimeOfArrival) {
         this.estimatedTimeOfArrival = estimatedTimeOfArrival;
     }
+
+    public Agent getAgent() {
+        return agent;
+    }
+
+    public void setAgent(Agent agent) {
+        this.agent = agent;
+    }
+
+    public Orders getOrder() {
+        return order;
+    }
+
+    public void setOrder(Orders order) {
+        this.order = order;
+    }
+
+	public Delivery(String delId, String delStatus, LocalDateTime estimatedTimeOfArrival, Agent agent, Orders order) {
+		this.delId = delId;
+		this.delStatus = delStatus;
+		this.estimatedTimeOfArrival = estimatedTimeOfArrival;
+		this.agent = agent;
+		this.order = order;
+	}
+	public Delivery(){
+	
+	}
+    
 }

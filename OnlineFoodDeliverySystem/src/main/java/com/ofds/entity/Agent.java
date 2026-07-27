@@ -7,37 +7,49 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "agent")
 public class Agent {
 
     @Id
+    @NotBlank(message = "Agent ID is required")
     @Column(name = "agentId")
     private String agentId;
 
+    @NotBlank(message = "Agent Name is required")
     @Column(name = "agentName")
     private String agentName;
 
+    @NotBlank(message = "Phone Number is required")
+    @Pattern(
+            regexp = "^[0-9]{10}$",
+            message = "Phone Number must be 10 digits"
+    )
     @Column(name = "agentPhoneNo")
     private String agentPhoneNo;
-    
+
     @OneToMany(mappedBy = "agent")
     private List<Delivery> deliveries;
-    
 
     public Agent() {
-    	
-    }
-    
-	public Agent(String agentId, String agentName, String agentPhoneNo, List<Delivery> deliveries) {
-		this.agentId = agentId;
-		this.agentName = agentName;
-		this.agentPhoneNo = agentPhoneNo;
-		this.deliveries = deliveries;
-	}
 
-	public String getAgentId() {
+    }
+
+    public Agent(String agentId,
+                 String agentName,
+                 String agentPhoneNo,
+                 List<Delivery> deliveries) {
+
+        this.agentId = agentId;
+        this.agentName = agentName;
+        this.agentPhoneNo = agentPhoneNo;
+        this.deliveries = deliveries;
+    }
+
+    public String getAgentId() {
         return agentId;
     }
 
@@ -62,12 +74,12 @@ public class Agent {
     }
 
     public List<Delivery> getDeliveries() {
-		return deliveries;
-	}
+        return deliveries;
+    }
 
-	public void setDeliveries(List<Delivery> deliveries) {
-		this.deliveries = deliveries;
-	}
+    public void setDeliveries(List<Delivery> deliveries) {
+        this.deliveries = deliveries;
+    }
     
     
 }

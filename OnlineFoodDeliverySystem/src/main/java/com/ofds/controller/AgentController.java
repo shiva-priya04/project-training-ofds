@@ -8,29 +8,30 @@ import org.springframework.web.bind.annotation.*;
 import com.ofds.entity.Agent;
 import com.ofds.service.AgentService;
 
+import jakarta.validation.Valid;
+
 @RestController
-@RequestMapping("/agent")
 public class AgentController {
 
     @Autowired
     private AgentService agentService;
 
-    @PostMapping
-    public Agent saveAgent(@RequestBody Agent agent) {
+    @PostMapping("/agent")
+    public Agent saveAgent(@Valid @RequestBody Agent agent) {
         return agentService.saveAgent(agent);
     }
 
-    @GetMapping
+    @GetMapping("/agent")
     public List<Agent> getAllAgents() {
         return agentService.getAllAgents();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/agent/{agentId}")
     public Agent getAgentById(@PathVariable String id) {
         return agentService.getAgentById(id);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/agent/{agentId}")
     public String deleteAgent(@PathVariable String id) {
 
         agentService.deleteAgent(id);
