@@ -21,7 +21,6 @@ public class Orders {
 	@Column(name = "orderId")
 	private String orderId;
 	
-	//@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "customerId")
 	private Customer customer;
@@ -32,7 +31,6 @@ public class Orders {
 	@Column(name = "totalAmt")
 	private Double totalAmt;
 	
-	//@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "resId")
 	private Restaurant restaurant;
