@@ -12,6 +12,11 @@ import com.ofds.entity.Orders;
 import com.ofds.repository.CustomerRepository;
 import com.ofds.repository.MenuItemRepository;
 import com.ofds.repository.OrdersRepository;
+import com.ofds.repository.RestaurantRepository;
+import com.ofds.exception.CustomerNotFoundException;
+import com.ofds.exception.InvalidOrderException;
+import com.ofds.exception.ItemNotFoundException;
+import com.ofds.exception.RestaurantNotFoundException;
 
 @Service
 public class OrdersServiceImpl implements OrdersService {
@@ -24,14 +29,22 @@ public class OrdersServiceImpl implements OrdersService {
 	
 	@Autowired
 	private MenuItemRepository menuItemRepository;
+	
+	@Autowired
+	private RestaurantRepository restaurantRepository;
 
 	@Override
 	public Orders saveOrder(Orders order) {
 		
+		System.out.println("Menus received: " + order.getMenus());
+		System.out.println("Customer received: " + order.getCustomer());
+		if(order.getMenus() == null) {
+			throw new InvalidOrderException("Order must contain at least one menu item");
+		}
+		
 		double totalAmt = 0;
 		for(MenuItem item : order.getMenus()) {
-			MenuItem dbItem = menuItemRepository.findById(item.getItemId()).orElseThrow(() -> new RuntimeException("Menu Item not found: " + item.getItemId()));
-
+			MenuItem dbItem = menuItemRepository.findById(item.getItemId()).orElseThrow(() -> new ItemNotFoundException("Menu Item not found: "));
         totalAmt += dbItem.getPrice();
 		}
 		
@@ -40,7 +53,7 @@ public class OrdersServiceImpl implements OrdersService {
 	    Customer customer =
 	            customerRepository.findById(custId)
 	                    .orElseThrow(() ->
-	                            new RuntimeException("Customer not found"));
+	                            new CustomerNotFoundException("Customer not found"));
 
 	    order.setCustomer(customer);
 		
@@ -56,8 +69,7 @@ public class OrdersServiceImpl implements OrdersService {
 
 	@Override
 	public Optional<Orders> getOrderById(String orderId) {
-		
-		return ordersRepository.findById(orderId);
+	    return ordersRepository.findById(orderId);
 	}
 	
 	@Override
@@ -70,7 +82,6 @@ public class OrdersServiceImpl implements OrdersService {
 	public void deleteOrder(String orderId) {
 		
 		ordersRepository.deleteById(orderId);
-		
 	}
 
 	@Override
@@ -87,6 +98,7 @@ public class OrdersServiceImpl implements OrdersService {
 	@Override
 	public List<Orders> getOrdersByRestaurantId(String resId) {
 		
+		restaurantRepository.findById(resId).orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found with ID: " + resId));
 		return ordersRepository.findByRestaurantResId(resId);
 	}
 

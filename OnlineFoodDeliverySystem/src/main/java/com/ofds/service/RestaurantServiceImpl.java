@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ofds.entity.Restaurant;
+import com.ofds.exception.RestaurantNotFoundException;
 import com.ofds.repository.RestaurantRepository;
 
 @Service
@@ -21,7 +22,8 @@ public class RestaurantServiceImpl implements RestaurantService {
 
 	@Override
 	public Restaurant getRestaurantById(String resId) {
-		return restaurantRepository.findById(resId).orElse(null);
+		return restaurantRepository.findById(resId).orElseThrow(() -> new RestaurantNotFoundException(
+		"Restaurant not found with ID: " + resId));
 	}
 
 	@Override
