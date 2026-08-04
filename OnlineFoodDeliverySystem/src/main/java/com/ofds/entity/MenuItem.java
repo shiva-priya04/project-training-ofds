@@ -2,7 +2,7 @@ package com.ofds.entity;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,24 +13,36 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
 @Entity
 @Table(name = "menu")
 public class MenuItem {
 	
 	@Id
+	@NotBlank(message = "Item ID cannot be empty")
 	@Column(name = "itemId")
 	private String itemId;
 	
+	@NotBlank(message = "Item name cannot be empty")
+	@Size(min = 2, max = 50,
+	message = "Item name must be between 2 and 50 characters")
 	@Column(name = "itemName")
 	private String itemName;
 	
+	@NotBlank(message = "Description cannot be empty")
 	@Column(name = "descriptions")
 	private String description;
 	
+	@NotNull(message = "Price cannot be null")
+	@Positive(message = "Price must be greater than 0")
 	@Column(name = "price")
-	private double price;
+	private Double price;
 	
-	@JsonIgnore
+	//@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "resId", referencedColumnName = "resId")
 	private Restaurant restaurant;
@@ -42,7 +54,7 @@ public class MenuItem {
 		
 	}
 
-	public MenuItem(String itemId, String itemName, String description, double price, Restaurant restaurant) {
+	public MenuItem(String itemId, String itemName, String description, Double price, Restaurant restaurant) {
 		this.itemId = itemId;
 		this.itemName = itemName;
 		this.description = description;
@@ -74,11 +86,11 @@ public class MenuItem {
 		this.description = description;
 	}
 
-	public double getPrice() {
+	public Double getPrice() {
 		return price;
 	}
 
-	public void setPrice(double price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 
@@ -89,7 +101,5 @@ public class MenuItem {
 	public void setRestaurant(Restaurant restaurant) {
 		this.restaurant = restaurant;
 	}
-	
-	
 
 }

@@ -13,14 +13,22 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+//import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
 @Entity
 @Table(name = "orders")
 public class Orders {
 	
 	@Id
+	@NotBlank(message = "Order ID cannot be empty")
 	@Column(name = "orderId")
 	private String orderId;
 	
+	//@JsonIgnore
+	@NotNull(message = "Customer details are required")
 	@ManyToOne
 	@JoinColumn(name = "customerId")
 	private Customer customer;
@@ -31,10 +39,14 @@ public class Orders {
 	@Column(name = "totalAmt")
 	private Double totalAmt;
 	
+	//@JsonIgnore
+	@NotNull(message = "Restaurant details are required")
 	@ManyToOne
 	@JoinColumn(name = "resId")
 	private Restaurant restaurant;
 	
+	@NotNull(message = "Menu items cannot be null")
+	@Size(min = 1, message = "Order must contain at least one menu item")
 	@ManyToMany
 	@JoinTable(
 			name = "orders_menu", 
