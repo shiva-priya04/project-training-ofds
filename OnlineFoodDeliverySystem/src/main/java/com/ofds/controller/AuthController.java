@@ -1,6 +1,7 @@
 package com.ofds.controller;
 
 import com.ofds.dto.LoginRequest;
+import com.ofds.dto.LoginResponse;
 import com.ofds.entity.User;
 import com.ofds.repository.UserRepository;
 import com.ofds.security.JwtUtil;
@@ -49,7 +50,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(
+    public LoginResponse login(
             @RequestBody LoginRequest request) {
 
         manager.authenticate(
@@ -57,7 +58,12 @@ public class AuthController {
                         request.getUsername(),
                         request.getPassword()));
 
-        return jwtUtil.generateToken(
-                request.getUsername());
+        String token = jwtUtil.generateToken(request.getUsername());
+
+        String role = repository.findByUsername(request.getUsername())
+                .map(User::getRole)
+                .orElse("CUSTOMER");
+
+        return new LoginResponse(token, request.getUsername(), role);
     }
 }
