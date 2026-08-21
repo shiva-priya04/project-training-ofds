@@ -1,0 +1,291 @@
+<main class="page">
+	<header class="topbar">
+		<nav class="navbar navbar-expand-lg container nav" aria-label="Primary">
+			<div class="container-fluid">
+				<a class="navbar-brand brand" routerLink="/">
+					<span class="brand-mark">🦀</span>
+					<span>Krusty Krab Admin</span>
+				</a>
+				<a class="back-link" routerLink="/">
+					<span>&larr;</span>
+					<span>Back to home</span>
+				</a>
+			</div>
+		</nav>
+	</header>
+
+	<section class="container admin-shell">
+		<aside class="admin-nav">
+			<button class="admin-nav__item" type="button" [class.active]="activeTab() === 'profile'" (click)="setTab('profile')">
+				<span>👤</span> Profile
+			</button>
+			<button class="admin-nav__item" type="button" [class.active]="activeTab() === 'restaurants'" (click)="setTab('restaurants')">
+				<span>🏬</span> Restaurant Management
+			</button>
+			<button class="admin-nav__item" type="button" [class.active]="activeTab() === 'orders'" (click)="setTab('orders')">
+				<span>🧾</span> Orders Management
+			</button>
+			<button class="admin-nav__item" type="button" [class.active]="activeTab() === 'delivery'" (click)="setTab('delivery')">
+				<span>🛵</span> Delivery Details
+			</button>
+			<button class="admin-nav__item" type="button" [class.active]="activeTab() === 'agents'" (click)="setTab('agents')">
+				<span>🏍️</span> Agent Management
+			</button>
+		</aside>
+
+		<div class="admin-content">
+			@if (actionError()) {
+				<div class="alert alert-danger" role="alert">{{ actionError() }}</div>
+			}
+			@if (activeTab() === 'profile') {
+				<article class="admin-card">
+					<h1>Admin Profile</h1>
+					<div class="profile-row">
+						<span class="profile-avatar">{{ profile.avatar }}</span>
+						<div>
+							<h2>{{ profile.name }}</h2>
+							<p class="muted">{{ profile.role }}</p>
+						</div>
+					</div>
+					<dl class="profile-details">
+						<div><dt>Email</dt><dd>{{ profile.email }}</dd></div>
+						<div><dt>Phone</dt><dd>{{ profile.phone }}</dd></div>
+						<div><dt>Joined</dt><dd>{{ profile.joined }}</dd></div>
+					</dl>
+				</article>
+			}
+
+			@if (activeTab() === 'restaurants') {
+				@if (selectedRestaurant; as restaurant) {
+					<article class="admin-card">
+						<div class="admin-card__header">
+							<div>
+								<button class="back-link back-link--btn" type="button" (click)="backToRestaurants()">
+									<span>&larr;</span><span>Back to restaurants</span>
+								</button>
+								<h1>{{ restaurant.name }} &middot; Menu</h1>
+							</div>
+						</div>
+
+						<form class="admin-form" (ngSubmit)="addMenuItem()">
+							<h3>Add Menu Item</h3>
+							<div class="admin-form__grid">
+								<input class="form-control" name="itemName" placeholder="Item name" [(ngModel)]="newItem.name" required />
+								<input class="form-control" name="itemDesc" placeholder="Description" [(ngModel)]="newItem.description" />
+								<input class="form-control" name="itemPrice" type="number" min="1" placeholder="Price" [(ngModel)]="newItem.price" required />
+								<select class="form-select" name="itemVeg" [(ngModel)]="newItem.veg">
+									<option [ngValue]="true">Veg</option>
+									<option [ngValue]="false">Non-Veg</option>
+								</select>
+								<button class="btn icon-btn icon-btn--add" type="submit" aria-label="Add item">✓</button>
+							</div>
+						</form>
+
+						<div class="menu-item-list">
+							@for (item of restaurant.items; track item.name) {
+								<article class="menu-item-row">
+									<span class="menu-item-row__icon">{{ item.icon }}</span>
+									<div class="menu-item-row__info">
+										<div class="menu-item-row__title">
+											<h3>{{ item.name }}</h3>
+											<span class="badge" [class.badge--veg]="item.veg" [class.badge--nonveg]="!item.veg">
+												{{ item.veg ? 'Veg' : 'Non-Veg' }}
+											</span>
+										</div>
+										<p>{{ item.description }}</p>
+									</div>
+									<div class="menu-item-row__actions">
+										<span class="price">₹{{ item.price }}</span>
+										<button class="btn icon-btn icon-btn--delete" type="button" (click)="deleteMenuItem(item.name)" aria-label="Delete item">✕</button>
+									</div>
+								</article>
+							} @empty {
+								<p class="muted">No menu items yet. Add one above.</p>
+							}
+						</div>
+					</article>
+				} @else {
+					<article class="admin-card">
+						<div class="admin-card__header">
+							<h1>Restaurant Management</h1>
+							<span class="stat-pill">{{ totalRestaurants }} restaurants added</span>
+						</div>
+
+						<form class="admin-form" (ngSubmit)="addRestaurant()">
+							<h3>Add Restaurant</h3>
+							<div class="admin-form__grid">
+								<input class="form-control" name="name" placeholder="Restaurant name" [(ngModel)]="newRestaurant.name" required />
+								<input class="form-control" name="area" placeholder="Area / Location" [(ngModel)]="newRestaurant.area" required />
+								<input class="form-control" name="cuisine" placeholder="Cuisine" [(ngModel)]="newRestaurant.cuisine" />
+								<select class="form-select" name="type" [(ngModel)]="newRestaurant.type">
+									<option value="veg">Veg</option>
+									<option value="non-veg">Non-Veg</option>
+								</select>
+								<button class="btn icon-btn icon-btn--add" type="submit" aria-label="Add restaurant">✓</button>
+							</div>
+						</form>
+
+						<div class="table-responsive admin-table-wrap">
+							<table class="table admin-table align-middle">
+								<thead>
+									<tr>
+										<th>Name</th>
+										<th>Area</th>
+										<th>Type</th>
+										<th>Menu Items</th>
+										<th class="text-end">Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									@for (restaurant of restaurants; track restaurant.id) {
+										<tr>
+											<td class="fw-bold">{{ restaurant.name }}</td>
+											<td>📍 {{ restaurant.area }}</td>
+											<td>
+												<span class="badge" [class.badge--veg]="restaurant.type !== 'non-veg'" [class.badge--nonveg]="restaurant.type === 'non-veg'">
+													{{ restaurant.type === 'non-veg' ? 'Non-Veg' : 'Veg' }}
+												</span>
+											</td>
+											<td>{{ restaurant.items.length }}</td>
+											<td class="text-end admin-table__actions">
+												<button class="btn view-btn" type="button" (click)="manageMenu(restaurant.id)">Manage Menu</button>
+												<button class="btn icon-btn icon-btn--delete" type="button" (click)="deleteRestaurant(restaurant.id)" aria-label="Delete restaurant">✕</button>
+											</td>
+										</tr>
+									} @empty {
+										<tr>
+											<td colspan="5" class="muted text-center">No restaurants added yet.</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					</article>
+				}
+			}
+
+			@if (activeTab() === 'orders') {
+				<article class="admin-card">
+					<h1>Orders Management</h1>
+					<div class="table-responsive admin-table-wrap">
+						<table class="table admin-table align-middle">
+							<thead>
+								<tr>
+									<th>Order #</th>
+									<th>Restaurant</th>
+									<th>Placed On</th>
+									<th>Status</th>
+								</tr>
+							</thead>
+							<tbody>
+								@for (order of orders; track order.orderNumber) {
+									<tr>
+										<td class="fw-bold">{{ order.orderNumber }}</td>
+										<td>{{ order.restaurant }}</td>
+										<td>{{ order.placedOn }}</td>
+										<td>
+											<span class="badge status-badge" [class]="'status-badge--' + order.trackingStage">
+												{{ order.trackingStage }}
+											</span>
+										</td>
+									</tr>
+								} @empty {
+									<tr>
+										<td colspan="4" class="muted text-center">No orders yet.</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</article>
+			}
+
+			@if (activeTab() === 'delivery') {
+				<article class="admin-card">
+					<h1>Delivery Details</h1>
+					<p class="muted">Orders currently out for delivery.</p>
+					<div class="table-responsive admin-table-wrap">
+						<table class="table admin-table align-middle">
+							<thead>
+								<tr>
+									<th>Order #</th>
+									<th>Restaurant</th>
+									<th>Customer</th>
+									<th>Delivery Address</th>
+									<th>Status</th>
+								</tr>
+							</thead>
+							<tbody>
+								@for (order of activeDeliveries; track order.orderNumber) {
+									<tr>
+										<td class="fw-bold">{{ order.orderNumber }}</td>
+										<td>{{ order.restaurant }}</td>
+										<td>{{ order.customerName }}</td>
+										<td>📍 {{ order.deliveryAddress }}</td>
+										<td>
+											<span class="badge status-badge status-badge--out-for-delivery">On the way</span>
+										</td>
+									</tr>
+								} @empty {
+									<tr>
+										<td colspan="5" class="muted text-center">No active deliveries right now.</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</article>
+			}
+
+			@if (activeTab() === 'agents') {
+				<article class="admin-card">
+					<div class="admin-card__header">
+						<h1>Agent Management</h1>
+						<span class="stat-pill">{{ totalAgents }} agents available</span>
+					</div>
+					@if (agentActionError()) {
+						<div class="alert alert-danger" role="alert">{{ agentActionError() }}</div>
+					}
+
+					<form class="admin-form" (ngSubmit)="addAgent()">
+						<h3>Add Agent</h3>
+						<div class="admin-form__grid">
+							<input class="form-control" name="agentName" placeholder="Agent name" [(ngModel)]="newAgent.agentName" required />
+							<input class="form-control" name="agentPhoneNo" placeholder="10-digit phone number" [(ngModel)]="newAgent.agentPhoneNo" required />
+							<button class="btn icon-btn icon-btn--add" type="submit" aria-label="Add agent">✓</button>
+						</div>
+					</form>
+
+					<div class="table-responsive admin-table-wrap">
+						<table class="table admin-table align-middle">
+							<thead>
+								<tr>
+									<th>Agent ID</th>
+									<th>Name</th>
+									<th>Phone</th>
+									<th class="text-end">Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								@for (agent of agents; track agent.agentId) {
+									<tr>
+										<td class="fw-bold">{{ agent.agentId }}</td>
+										<td>{{ agent.agentName }}</td>
+										<td>{{ agent.agentPhoneNo }}</td>
+										<td class="text-end admin-table__actions">
+											<button class="btn icon-btn icon-btn--delete" type="button" (click)="deleteAgent(agent.agentId)" aria-label="Delete agent">✕</button>
+										</td>
+									</tr>
+								} @empty {
+									<tr>
+										<td colspan="4" class="muted text-center">No agents added yet.</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</article>
+			}
+		</div>
+	</section>
+</main>

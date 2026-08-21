@@ -1,0 +1,108 @@
+<main class="page">
+	@if (cart.toastMessage()) {
+		<div class="toast-popup">
+			<span>{{ cart.toastMessage() }}</span>
+			<a class="toast-popup__btn" routerLink="/cart">View cart</a>
+		</div>
+	}
+
+	<header class="topbar">
+		<nav class="navbar navbar-expand-lg container nav" aria-label="Primary">
+			<div class="container-fluid">
+				<a class="navbar-brand brand" routerLink="/">
+					<span class="brand-mark">🦀</span>
+					<span>Krusty Krab</span>
+				</a>
+				<a class="back-link" routerLink="/restaurant-list">
+					<span>&larr;</span>
+					<span>Back to restaurants</span>
+				</a>
+			</div>
+		</nav>
+	</header>
+
+	@if (restaurantMenu) {
+		<section class="container hero-strip">
+			<h1>{{ restaurantMenu.name }}</h1>
+			<p>📍 {{ restaurantMenu.area }} &middot; Menu Card</p>
+		</section>
+
+		<section class="container section">
+			<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+				@for (item of restaurantMenu.items; track item.name) {
+					<div class="col">
+						<article class="menu-item-card h-100">
+							<div class="menu-item-card__top">
+								<span class="menu-item-card__icon">{{ item.icon }}</span>
+								<span class="badge" [class.badge--veg]="item.veg" [class.badge--nonveg]="!item.veg">
+									{{ item.veg ? 'Veg' : 'Non-Veg' }}
+								</span>
+							</div>
+							<h3>{{ item.name }}</h3>
+							<p class="menu-item-card__desc">{{ item.description }}</p>
+							<div class="menu-item-card__footer">
+								<span class="price">₹{{ item.price }}</span>
+								@if (cart.getQuantity(item) > 0) {
+									<div class="item-stepper">
+										<button class="stepper-btn" type="button" (click)="cart.decrement(item)" aria-label="Decrease quantity">−</button>
+										<span class="item-stepper__qty">{{ cart.getQuantity(item) }}</span>
+										<button class="stepper-btn" type="button" (click)="cart.increment(item)" aria-label="Increase quantity">+</button>
+									</div>
+								} @else {
+									<button class="btn add-btn" type="button" (click)="addToCart(item)">Add to cart</button>
+								}
+							</div>
+						</article>
+					</div>
+				}
+			</div>
+		</section>
+	} @else if (allMenus.length) {
+		<section class="container hero-strip">
+			<h1>Menus</h1>
+			<p>Browse dishes from every restaurant in one place.</p>
+		</section>
+
+		@for (menu of allMenus; track menu.id) {
+			<section class="container section">
+				<h2>{{ menu.name }}</h2>
+				<p>📍 {{ menu.area }}</p>
+				<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+					@for (item of menu.items; track item.name) {
+						<div class="col">
+							<article class="menu-item-card h-100">
+								<div class="menu-item-card__top">
+									<span class="menu-item-card__icon">{{ item.icon }}</span>
+									<span class="badge" [class.badge--veg]="item.veg" [class.badge--nonveg]="!item.veg">
+										{{ item.veg ? 'Veg' : 'Non-Veg' }}
+									</span>
+								</div>
+								<h3>{{ item.name }}</h3>
+								<p class="menu-item-card__desc">{{ item.description }}</p>
+								<div class="menu-item-card__footer">
+									<span class="price">₹{{ item.price }}</span>
+										@if (cart.getQuantity(item) > 0) {
+											<div class="item-stepper">
+												<button class="stepper-btn" type="button" (click)="cart.decrement(item)" aria-label="Decrease quantity">−</button>
+												<span class="item-stepper__qty">{{ cart.getQuantity(item) }}</span>
+												<button class="stepper-btn" type="button" (click)="cart.increment(item)" aria-label="Increase quantity">+</button>
+											</div>
+										} @else {
+											<button class="btn add-btn" type="button" (click)="addToCart(item)">Add to cart</button>
+										}
+								</div>
+							</article>
+						</div>
+					}
+				</div>
+			</section>
+		}
+	} @else {
+		<section class="container hero-strip">
+			<h1>Restaurant not found</h1>
+			<p>We couldn't find the menu you're looking for.</p>
+			<a class="btn view-btn" routerLink="/restaurant-list">Back to restaurants</a>
+		</section>
+	}
+</main>
+

@@ -1,0 +1,104 @@
+<main class="page tracking-page">
+	<header class="topbar">
+		<nav class="navbar navbar-expand-lg container nav" aria-label="Primary">
+			<div class="container-fluid">
+				<a class="navbar-brand brand" routerLink="/">
+					<span class="brand-mark">🦀</span>
+					<span>Krusty Krab</span>
+				</a>
+				<a class="back-link" routerLink="/my-orders">
+					<span>&larr;</span>
+					<span>Back to my orders</span>
+				</a>
+			</div>
+		</nav>
+	</header>
+
+	@if (order) {
+		<section class="container tracking-wrap">
+			<div class="order-summary">
+				<div class="order-summary__header">
+					<div>
+						<span class="order-summary__restaurant">{{ order.restaurant }}</span>
+						<span class="order-summary__meta">Order #{{ order.orderNumber }} &middot; {{ order.placedOn }}</span>
+					</div>
+				</div>
+
+				<div class="order-summary__items">
+					@for (line of order.lines; track line.item.name) {
+						<div class="order-summary__item">
+							<span class="order-summary__item-icon">{{ line.item.icon }}</span>
+							<div class="order-summary__item-info">
+								<span class="order-summary__item-name">{{ line.item.name }}</span>
+								<span class="order-summary__item-qty">Qty: {{ line.quantity }}</span>
+							</div>
+							<span class="order-summary__item-price">₹{{ line.item.price * line.quantity }}</span>
+						</div>
+					}
+				</div>
+
+				<div class="order-summary__divider"></div>
+
+				<div class="order-summary__totals">
+					<div class="order-summary__row">
+						<span>Subtotal</span>
+						<span>₹{{ subtotal() }}</span>
+					</div>
+					<div class="order-summary__row">
+						<span>Delivery fee</span>
+						<span>{{ order.trackingStage === 'cancelled' ? '—' : '₹' + order.deliveryFee }}</span>
+					</div>
+					<div class="order-summary__row order-summary__row--total">
+						<span>Total</span>
+						<span>₹{{ total() }}</span>
+					</div>
+				</div>
+
+				<div class="order-summary__divider"></div>
+
+				<div class="order-summary__delivery">
+					<span class="order-summary__delivery-name">{{ order.customerName }}</span>
+					<span class="order-summary__delivery-address">{{ order.deliveryAddress }}</span>
+				</div>
+			</div>
+
+			@if (order.trackingStage === 'cancelled') {
+				<div class="status-box status-box--cancelled">
+					<span class="status-box__icon">✕</span>
+					<h2>Order Cancelled</h2>
+					<p>This order was cancelled and will not be delivered.</p>
+				</div>
+			} @else {
+				<div class="status-box">
+					<h2 class="status-box__title">Order Status</h2>
+					<div class="tracker">
+						@for (step of steps; track step.key; let i = $index) {
+							<div class="tracker__step" [class.tracker__step--done]="isStepDone(i)" [class.tracker__step--current]="i === currentStepIndex()">
+								<div class="tracker__icon">{{ step.icon }}</div>
+								<span class="tracker__label">{{ step.label }}</span>
+								@if (i < steps.length - 1) {
+									<div class="tracker__connector" [class.tracker__connector--done]="isStepDone(i + 1)"></div>
+								}
+							</div>
+						}
+					</div>
+
+					@if (order.trackingStage === 'delivered') {
+						<p class="status-box__message">Delivered successfully 🎉</p>
+					} @else if (order.estimatedArrival) {
+						<p class="status-box__message">Estimated arrival: {{ order.estimatedArrival }}</p>
+					}
+				</div>
+			}
+		</section>
+	} @else {
+		<section class="container tracking-wrap">
+			<div class="status-box status-box--cancelled">
+				<span class="status-box__icon">❓</span>
+				<h2>Order not found</h2>
+				<p>We couldn't find this order. Please check your orders list.</p>
+				<a class="btn view-btn" routerLink="/my-orders">Go to My Orders</a>
+			</div>
+		</section>
+	}
+</main>

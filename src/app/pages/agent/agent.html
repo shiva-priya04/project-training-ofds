@@ -1,0 +1,208 @@
+<main class="page">
+	<header class="topbar">
+		<nav class="navbar navbar-expand-lg container nav" aria-label="Primary">
+			<div class="container-fluid">
+				<a class="navbar-brand brand" routerLink="/">
+					<span class="brand-mark">🦀</span>
+					<span>Krusty Krab Agent</span>
+				</a>
+				<a class="back-link" routerLink="/">
+					<span>&larr;</span>
+					<span>Back to home</span>
+				</a>
+			</div>
+		</nav>
+	</header>
+
+	<section class="container agent-shell">
+		<aside class="agent-nav">
+			<button class="agent-nav__item" type="button" [class.active]="activeTab() === 'profile'" (click)="setTab('profile')">
+				<span>👤</span> Profile
+			</button>
+			<button class="agent-nav__item" type="button" [class.active]="activeTab() === 'assigned'" (click)="setTab('assigned')">
+				<span>📦</span> Delivery Assigned
+			</button>
+			<button class="agent-nav__item" type="button" [class.active]="activeTab() === 'details'" (click)="setTab('details')">
+				<span>📋</span> Delivery Details
+			</button>
+			<button class="agent-nav__item" type="button" [class.active]="activeTab() === 'status'" (click)="setTab('status')">
+				<span>🔄</span> Status Update
+			</button>
+			<button class="agent-nav__item" type="button" [class.active]="activeTab() === 'my-deliveries'" (click)="setTab('my-deliveries')">
+				<span>🗂️</span> My Deliveries
+			</button>
+		</aside>
+
+		<div class="agent-content">
+			@if (activeTab() === 'profile') {
+				<article class="agent-card">
+					<h1>Agent Profile</h1>
+					<div class="profile-row">
+						<span class="profile-avatar">{{ profile.avatar }}</span>
+						<div>
+							<h2>{{ profile.name }}</h2>
+							<p class="muted">Agent ID: {{ profile.agentId }}</p>
+						</div>
+					</div>
+					<dl class="profile-details">
+						<div><dt>Phone</dt><dd>{{ profile.phone }}</dd></div>
+						<div><dt>Vehicle</dt><dd>{{ profile.vehicle }}</dd></div>
+						<div><dt>Zone</dt><dd>{{ profile.zone }}</dd></div>
+						<div><dt>Rating</dt><dd>⭐ {{ profile.rating }}</dd></div>
+						<div><dt>Joined</dt><dd>{{ profile.joined }}</dd></div>
+					</dl>
+				</article>
+			}
+
+			@if (activeTab() === 'assigned') {
+				<article class="agent-card">
+					<div class="agent-card__header">
+						<h1>Delivery Assigned</h1>
+						<span class="stat-pill">{{ assignedDeliveries.length }} active</span>
+					</div>
+					<div class="table-responsive agent-table-wrap">
+						<table class="table agent-table align-middle">
+							<thead>
+								<tr>
+									<th>Order #</th>
+									<th>Restaurant</th>
+									<th>Customer</th>
+									<th>Status</th>
+								</tr>
+							</thead>
+							<tbody>
+								@for (order of assignedDeliveries; track order.orderNumber) {
+									<tr>
+										<td class="fw-bold">{{ order.orderNumber }}</td>
+										<td>{{ order.restaurant }}</td>
+										<td>{{ order.customerName }}</td>
+										<td>
+											<span class="badge status-badge" [class]="'status-badge--' + order.trackingStage">
+												{{ order.trackingStage }}
+											</span>
+										</td>
+									</tr>
+								} @empty {
+									<tr>
+										<td colspan="4" class="muted text-center">No deliveries assigned right now.</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</article>
+			}
+
+			@if (activeTab() === 'details') {
+				<article class="agent-card">
+					<h1>Delivery Details</h1>
+					@if (currentDelivery; as order) {
+						<div class="delivery-details">
+							<div class="delivery-details__header">
+								<div>
+									<h2>{{ order.orderNumber }}</h2>
+									<p class="muted">{{ order.restaurant }} &middot; {{ order.placedOn }}</p>
+								</div>
+								<span class="badge status-badge" [class]="'status-badge--' + order.trackingStage">
+									{{ order.trackingStage }}
+								</span>
+							</div>
+							<dl class="profile-details">
+								<div><dt>Customer</dt><dd>{{ order.customerName }}</dd></div>
+								<div><dt>Phone</dt><dd>{{ order.customerPhone ?? 'N/A' }}</dd></div>
+								<div><dt>Delivery Address</dt><dd>📍 {{ order.deliveryAddress }}</dd></div>
+								<div><dt>Order Total</dt><dd>₹{{ orderTotal(order) }}</dd></div>
+							</dl>
+							<div class="menu-item-list">
+								@for (line of order.lines; track line.item.name) {
+									<article class="menu-item-row">
+										<span class="menu-item-row__icon">{{ line.item.icon }}</span>
+										<div class="menu-item-row__info">
+											<h3>{{ line.item.name }}</h3>
+											<p>Qty: {{ line.quantity }}</p>
+										</div>
+										<div class="menu-item-row__actions">
+											<span class="price">₹{{ line.item.price * line.quantity }}</span>
+										</div>
+									</article>
+								}
+							</div>
+						</div>
+					} @else {
+						<p class="muted">You have no active delivery right now.</p>
+					}
+				</article>
+			}
+
+			@if (activeTab() === 'status') {
+				<article class="agent-card">
+					<h1>Status Update</h1>
+					@if (currentDelivery; as order) {
+						<div class="delivery-details">
+							<div class="delivery-details__header">
+								<div>
+									<h2>{{ order.orderNumber }}</h2>
+									<p class="muted">{{ order.restaurant }} &middot; {{ order.customerName }}</p>
+								</div>
+								<span class="badge status-badge" [class]="'status-badge--' + order.trackingStage">
+									{{ order.trackingStage }}
+								</span>
+							</div>
+							<p class="muted">Select the new status for this delivery:</p>
+							<div class="status-options">
+								@for (stage of stages; track stage.key) {
+									<button
+										class="btn status-option"
+										type="button"
+										[class.active]="order.trackingStage === stage.key"
+										(click)="updateStatus(stage.key)"
+									>
+										{{ stage.label }}
+									</button>
+								}
+							</div>
+						</div>
+					} @else {
+						<p class="muted">You have no active delivery right now.</p>
+					}
+				</article>
+			}
+
+			@if (activeTab() === 'my-deliveries') {
+				<article class="agent-card">
+					<h1>My Deliveries</h1>
+					<div class="table-responsive agent-table-wrap">
+						<table class="table agent-table align-middle">
+							<thead>
+								<tr>
+									<th>Order #</th>
+									<th>Restaurant</th>
+									<th>Placed On</th>
+									<th>Status</th>
+								</tr>
+							</thead>
+							<tbody>
+								@for (order of myDeliveries; track order.orderNumber) {
+									<tr>
+										<td class="fw-bold">{{ order.orderNumber }}</td>
+										<td>{{ order.restaurant }}</td>
+										<td>{{ order.placedOn }}</td>
+										<td>
+											<span class="badge status-badge" [class]="'status-badge--' + order.trackingStage">
+												{{ order.trackingStage }}
+											</span>
+										</td>
+									</tr>
+								} @empty {
+									<tr>
+										<td colspan="4" class="muted text-center">No deliveries yet.</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</article>
+			}
+		</div>
+	</section>
+</main>

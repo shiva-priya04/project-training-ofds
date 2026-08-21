@@ -1,0 +1,72 @@
+<main class="page order-confirm-page">
+	<header class="topbar">
+		<nav class="navbar navbar-expand-lg container nav" aria-label="Primary">
+			<div class="container-fluid">
+				<a class="navbar-brand brand" routerLink="/">
+					<span class="brand-mark">🦀</span>
+					<span>Krusty Krab</span>
+				</a>
+				<a class="back-link" routerLink="/">
+					<span>&larr;</span>
+					<span>Back to home</span>
+				</a>
+			</div>
+		</nav>
+	</header>
+
+
+	<section class="container bill-wrap">
+		<div class="bill">
+			<div class="bill__header">
+				<div class="confirm-icon">✅</div>
+				<h1>Order Confirmed!</h1>
+				<p>Order #{{ orderNumber }} &middot; Krusty Krab Food Delivery</p>
+			</div>
+
+			<div class="eta-box">
+				<span class="eta-icon">🛵</span>
+				<div class="eta-info">
+					<span class="eta-label">Estimated arrival</span>
+					<span class="eta-time">{{ estimatedArrival }}</span>
+				</div>
+			</div>
+
+			<div class="bill__divider"></div>
+
+			<div class="bill__items">
+				@for (line of orderItems; track line.item.name) {
+					<div class="bill__item">
+						<span class="bill__item-icon">{{ line.item.icon }}</span>
+						<div class="bill__item-info">
+							<span class="bill__item-name">{{ line.item.name }}</span>
+							<span class="bill__item-qty">Qty: {{ line.quantity }}</span>
+						</div>
+						<span class="bill__item-price">₹{{ line.item.price * line.quantity }}</span>
+					</div>
+				}
+			</div>
+
+			<div class="bill__divider"></div>
+
+			<div class="bill__totals">
+				<div class="bill__row">
+					<span>Subtotal</span>
+					<span>₹{{ subtotal }}</span>
+				</div>
+				<div class="bill__row">
+					<span>Delivery fee</span>
+					<span>₹{{ deliveryFee }}</span>
+				</div>
+				<div class="bill__row bill__row--total">
+					<span>Total</span>
+					<span>₹{{ total }}</span>
+				</div>
+			</div>
+
+			<div class="bill__actions confirm-actions">
+				<a class="btn view-btn" routerLink="/restaurant-list">Continue Shopping</a>
+				<button class="btn track-btn" type="button" (click)="trackOrder()">Track Order</button>
+			</div>
+		</div>
+	</section>
+</main>

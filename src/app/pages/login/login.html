@@ -1,0 +1,88 @@
+<main class="auth-page">
+	<div class="container">
+		<a class="back-link" routerLink="/">
+			<span>&larr;</span>
+			<span>Back to home</span>
+		</a>
+
+		<div class="auth-card">
+			<div class="auth-card__header">
+				<span class="brand-mark">🦀</span>
+				<h1>{{ roleLabels[context()] }} Account</h1>
+				<p>Sign in or create a {{ roleLabels[context()] }} account to keep the cravings coming.</p>
+			</div>
+
+			<div class="auth-card__body">
+				<div class="auth-field">
+					<label for="loginRole">Choose who you want to sign in as</label>
+					<select class="form-control" id="loginRole" name="loginRole" [(ngModel)]="selectedRole" (ngModelChange)="onRoleChange($event)">
+						<option value="CUSTOMER">Customer</option>
+						<option value="ADMIN">Admin</option>
+						<option value="AGENT">Delivery agent</option>
+					</select>
+				</div>
+
+				<ul class="nav nav-tabs auth-tabs" role="tablist">
+					<li class="nav-item" role="presentation">
+						<button class="nav-link active auth-tab" id="login-tab" type="button" data-bs-toggle="tab" data-bs-target="#loginPanel" role="tab" aria-controls="loginPanel" aria-selected="true">Login</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link auth-tab" id="register-tab" type="button" data-bs-toggle="tab" data-bs-target="#registerPanel" role="tab" aria-controls="registerPanel" aria-selected="false">Register</button>
+					</li>
+				</ul>
+
+				<div class="tab-content">
+					<section class="tab-pane fade show active auth-panel" id="loginPanel" role="tabpanel" aria-labelledby="login-tab">
+						<p>Welcome back. Sign in to continue your order and view saved details.</p>
+						<form class="auth-form" (ngSubmit)="login()">
+							<div class="auth-field">
+								<label for="loginUsername">Username</label>
+								<input class="form-control" id="loginUsername" name="loginUsername" type="text" placeholder="Your username" [(ngModel)]="loginUsername">
+							</div>
+							<div class="auth-field">
+								<label for="loginPassword">Password</label>
+								<input class="form-control" id="loginPassword" name="loginPassword" type="password" placeholder="Enter your password" [(ngModel)]="loginPassword">
+							</div>
+							@if (loginError()) {
+								<small class="text-danger">{{ loginError() }}</small>
+							}
+							<button class="auth-submit btn" type="submit" [disabled]="loginBusy() || !loginUsername || !loginPassword">
+								{{ loginBusy() ? 'Signing in...' : 'Login' }}
+							</button>
+						</form>
+					</section>
+
+					<section class="tab-pane fade auth-panel" id="registerPanel" role="tabpanel" aria-labelledby="register-tab">
+						<p>Create a {{ roleLabels[context()] }} account to save addresses, repeat orders, and check out faster.</p>
+						<form class="auth-form" (ngSubmit)="register()">
+							<div class="auth-field">
+								<label for="registerUsername">Username</label>
+								<input class="form-control" id="registerUsername" name="registerUsername" type="text" placeholder="Choose a username" [(ngModel)]="registerUsername">
+							</div>
+							<div class="auth-field">
+								<label for="registerPassword">Password</label>
+								<input class="form-control" id="registerPassword" name="registerPassword" type="password" placeholder="Create a password" [(ngModel)]="registerPassword">
+							</div>
+							<div class="auth-field">
+								<label for="confirmPassword">Confirm password</label>
+								<input class="form-control" id="confirmPassword" name="confirmPassword" type="password" placeholder="Re-enter your password" [(ngModel)]="confirmPassword">
+								@if (confirmPassword && !passwordsMatch) {
+									<small class="text-danger">Passwords do not match.</small>
+								}
+							</div>
+							@if (registerError()) {
+								<small class="text-danger">{{ registerError() }}</small>
+							}
+							@if (registerSuccess()) {
+								<small class="text-success">{{ registerSuccess() }}</small>
+							}
+							<button class="auth-submit btn" type="submit" [disabled]="registerBusy() || !registerUsername || !registerPassword || !passwordsMatch">
+								{{ registerBusy() ? 'Creating account...' : 'Register' }}
+							</button>
+						</form>
+					</section>
+				</div>
+			</div>
+		</div>
+	</div>
+</main>

@@ -1,0 +1,126 @@
+<main class="page">
+	@if (cart.toastMessage()) {
+		<div class="toast-popup">
+			<span>{{ cart.toastMessage() }}</span>
+			<a class="toast-popup__btn" routerLink="/cart">View cart</a>
+		</div>
+	}
+
+	<header class="topbar">
+		<nav class="navbar navbar-expand-lg container nav" aria-label="Primary">
+			<div class="container-fluid">
+				<a class="navbar-brand brand" routerLink="/">
+					<span class="brand-mark">🦀</span>
+					<span>Krusty Krab</span>
+				</a>
+				<a class="back-link" routerLink="/">
+					<span>&larr;</span>
+					<span>Back to home</span>
+				</a>
+			</div>
+		</nav>
+	</header>
+
+	<section class="container hero-strip">
+		<h1>Restaurants in Chennai</h1>
+		<p>Pick from your favourite veg and non-veg spots around the city, all set for a quick, comforting order.</p>
+	</section>
+
+	<section class="container section">
+		<div class="section-header">
+			<h2><span class="dot dot--veg"></span>Veg Restaurants</h2>
+		</div>
+		<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+			@for (restaurant of vegRestaurants; track restaurant.id) {
+				<div class="col">
+					<article class="restaurant-card h-100">
+						<div class="restaurant-card__top">
+							<span class="restaurant-card__icon">{{ restaurant.icon }}</span>
+							<span class="badge badge--veg">Veg</span>
+						</div>
+						<h3>{{ restaurant.name }}</h3>
+						<p class="restaurant-card__cuisine">{{ restaurant.cuisine }}</p>
+						<div class="restaurant-card__meta">
+							<span>📍 {{ restaurant.area }}</span>
+							<span>⏱ {{ restaurant.time }}</span>
+						</div>
+						<div class="restaurant-card__footer">
+							<span class="rating">⭐ {{ restaurant.rating }}</span>
+							<button class="btn view-btn" type="button" (click)="openMenu(restaurant.id)">View Menu</button>
+						</div>
+					</article>
+				</div>
+			}
+		</div>
+	</section>
+
+	<section class="container section">
+		<div class="section-header">
+			<h2><span class="dot dot--nonveg"></span>Non-Veg Restaurants</h2>
+		</div>
+		<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+			@for (restaurant of nonVegRestaurants; track restaurant.id) {
+				<div class="col">
+					<article class="restaurant-card h-100">
+						<div class="restaurant-card__top">
+							<span class="restaurant-card__icon">{{ restaurant.icon }}</span>
+							<span class="badge badge--nonveg">Non-Veg</span>
+						</div>
+						<h3>{{ restaurant.name }}</h3>
+						<p class="restaurant-card__cuisine">{{ restaurant.cuisine }}</p>
+						<div class="restaurant-card__meta">
+							<span>📍 {{ restaurant.area }}</span>
+							<span>⏱ {{ restaurant.time }}</span>
+						</div>
+						<div class="restaurant-card__footer">
+							<span class="rating">⭐ {{ restaurant.rating }}</span>
+							<button class="btn view-btn" type="button" (click)="openMenu(restaurant.id)">View Menu</button>
+						</div>
+					</article>
+				</div>
+			}
+		</div>
+	</section>
+
+	@if (selectedMenu) {
+		<div class="menu-modal-backdrop" (click)="closeMenu()">
+			<div class="menu-modal" (click)="$event.stopPropagation()">
+				<div class="menu-modal__header">
+					<div>
+						<h2>{{ selectedMenu.name }}</h2>
+						<p>📍 {{ selectedMenu.area }} &middot; Menu Card</p>
+					</div>
+					<button class="menu-modal__close" type="button" (click)="closeMenu()" aria-label="Close menu">✕</button>
+				</div>
+				<div class="menu-modal__body">
+					@for (item of selectedMenu.items; track item.name) {
+						<article class="menu-item-row">
+							<span class="menu-item-row__icon">{{ item.icon }}</span>
+							<div class="menu-item-row__info">
+								<div class="menu-item-row__title">
+									<h3>{{ item.name }}</h3>
+									<span class="badge" [class.badge--veg]="item.veg" [class.badge--nonveg]="!item.veg">
+										{{ item.veg ? 'Veg' : 'Non-Veg' }}
+									</span>
+								</div>
+								<p>{{ item.description }}</p>
+							</div>
+							<div class="menu-item-row__actions">
+								<span class="price">₹{{ item.price }}</span>
+								@if (cart.getQuantity(item) > 0) {
+									<div class="item-stepper">
+										<button class="stepper-btn" type="button" (click)="cart.decrement(item)" aria-label="Decrease quantity">−</button>
+										<span class="item-stepper__qty">{{ cart.getQuantity(item) }}</span>
+										<button class="stepper-btn" type="button" (click)="cart.increment(item)" aria-label="Increase quantity">+</button>
+									</div>
+								} @else {
+									<button class="btn add-btn" type="button" (click)="addToCart(item)">Add</button>
+								}
+							</div>
+						</article>
+					}
+				</div>
+			</div>
+		</div>
+	}
+</main>

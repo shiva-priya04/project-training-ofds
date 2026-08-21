@@ -1,0 +1,260 @@
+:root {
+	--bg-blue: #eaf4ff;
+	--surface: #ffffff;
+	--text: #2f3a4a;
+	--muted: #647186;
+	--sky: #bcdcff;
+	--powder: #d6e9ff;
+	--periwinkle: #cfd8ff;
+	--lavender: #7f6bb8;
+	--shadow: 0 20px 50px rgba(88, 122, 168, 0.14);
+	--radius-lg: 26px;
+	--radius-md: 18px;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+.page {
+	min-height: 100vh;
+	background: linear-gradient(180deg, #eef6ff 0%, #e4edff 100%);
+	font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+	color: var(--text);
+	padding-bottom: 60px;
+}
+
+.topbar {
+	padding: 22px 0;
+}
+
+.nav {
+	padding: 14px 20px;
+	border: 1px solid #ffffff;
+	background: var(--surface);
+	border-radius: 28px;
+	box-shadow: var(--shadow);
+}
+
+.nav .container-fluid {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-weight: 800;
+	color: var(--text);
+	text-decoration: none;
+}
+
+.back-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--muted);
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.back-link:hover {
+	color: var(--text);
+}
+
+.bill-wrap {
+	display: flex;
+	justify-content: center;
+	padding-top: 40px;
+}
+
+.bill {
+	width: 100%;
+	max-width: 480px;
+	background: rgba(255, 255, 255, 0.35);
+	backdrop-filter: blur(14px);
+	-webkit-backdrop-filter: blur(14px);
+	border: 1px solid rgba(255, 255, 255, 0.5);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow);
+	padding: 32px 28px;
+}
+
+.bill__header {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.bill__header h1 {
+	font-weight: 800;
+	margin-bottom: 4px;
+	color: var(--text);
+}
+
+.bill__header p {
+	color: var(--muted);
+	margin: 0;
+}
+
+.bill__empty {
+	text-align: center;
+	padding: 30px 10px;
+}
+
+.frown-face {
+	font-size: 4rem;
+	margin-bottom: 14px;
+}
+
+.bill__empty h2 {
+	font-weight: 800;
+	color: var(--text);
+	margin-bottom: 8px;
+}
+
+.bill__empty p {
+	color: var(--muted);
+	margin-bottom: 20px;
+}
+
+.view-btn {
+	background: var(--sky);
+	border: none;
+	color: #17324d;
+	font-weight: 700;
+	padding: 10px 22px;
+	border-radius: 999px;
+	transition: background 0.2s ease;
+	text-decoration: none;
+	display: inline-block;
+}
+
+.view-btn:hover {
+	background: var(--periwinkle);
+	color: #17324d;
+}
+
+.bill__divider {
+	border-top: 1px dashed rgba(100, 113, 134, 0.4);
+	margin: 20px 0;
+}
+
+.bill__items {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.bill__item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.bill__item-icon {
+	font-size: 1.6rem;
+	width: 44px;
+	height: 44px;
+	background: rgba(255, 255, 255, 0.5);
+	border-radius: var(--radius-md);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.bill__item-info {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.bill__item-name {
+	font-weight: 700;
+	color: var(--text);
+}
+
+.bill__item-qty {
+	font-size: 0.9rem;
+	font-weight: 700;
+	color: var(--text);
+	min-width: 18px;
+	text-align: center;
+}
+
+.bill__item-stepper {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: 4px;
+}
+
+.stepper-btn {
+	background: rgba(255, 255, 255, 0.6);
+	border: 1px solid rgba(100, 113, 134, 0.25);
+	color: var(--text);
+	font-weight: 800;
+	width: 26px;
+	height: 26px;
+	line-height: 1;
+	border-radius: 50%;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	transition: background 0.2s ease;
+}
+
+.stepper-btn:hover {
+	background: var(--sky);
+}
+
+.bill__item-price {
+	font-weight: 700;
+	color: var(--text);
+}
+
+.remove-btn {
+	background: transparent;
+	border: none;
+	color: var(--muted);
+	font-weight: 700;
+	cursor: pointer;
+	padding: 4px 8px;
+	border-radius: 999px;
+	transition: background 0.2s ease, color 0.2s ease;
+}
+
+.remove-btn:hover {
+	background: rgba(243, 166, 166, 0.25);
+	color: #b0453f;
+}
+
+.bill__actions {
+	text-align: center;
+	margin-top: 20px;
+}
+
+.bill__totals {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.bill__row {
+	display: flex;
+	justify-content: space-between;
+	color: var(--muted);
+	font-weight: 600;
+}
+
+.bill__row--total {
+	color: var(--text);
+	font-weight: 800;
+	font-size: 1.1rem;
+	border-top: 1px solid rgba(100, 113, 134, 0.25);
+	padding-top: 10px;
+}

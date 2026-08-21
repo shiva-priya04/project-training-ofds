@@ -1,0 +1,228 @@
+<main class="page">
+	@if (cart.toastMessage()) {
+		<div class="toast-popup">
+			<span>{{ cart.toastMessage() }}</span>
+			<a class="toast-popup__btn" routerLink="/cart">View cart</a>
+		</div>
+	}
+
+	<header class="topbar">
+		<nav class="navbar navbar-expand-lg container nav" aria-label="Primary">
+			<div class="container-fluid">
+				<a class="navbar-brand brand" href="#home">
+					<span class="brand-mark">🦀</span>
+					<span>Krusty Krab</span>
+				</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarContent">
+					<div class="nav-links navbar-nav mx-auto">
+						<a class="nav-link" routerLink="/restaurant-list">Restaurants</a>
+						<a class="nav-link" href="#how-it-works">How it works</a>
+						<a class="nav-link" routerLink="/cart">Cart</a>
+						<a class="nav-link" routerLink="/my-orders">My Orders</a>
+					</div>
+					@if (auth.isLoggedIn) {
+						<div class="profile-pill">
+							<span class="profile-pill__avatar">👤</span>
+							<div class="profile-pill__info">
+								<span class="profile-pill__name">{{ auth.username() }}</span>
+								<span class="profile-pill__role">{{ auth.role() }}</span>
+							</div>
+							@if (auth.role() === 'ADMIN') {
+								<a class="nav-cta btn" routerLink="/admin">Dashboard</a>
+							} @else if (auth.role() === 'AGENT') {
+								<a class="nav-cta btn" routerLink="/agent">Dashboard</a>
+							}
+							<button class="nav-cta nav-cta--outline btn" type="button" (click)="logout()">Logout</button>
+						</div>
+					} @else {
+						<div class="auth-buttons">
+							<a class="nav-cta btn" routerLink="/login">Login / Register</a>
+						</div>
+					}
+				</div>
+			</div>
+		</nav>
+	</header>
+
+	<section class="container hero" id="home">
+		<div class="row align-items-center g-4">
+			<div class="col-lg-6">
+				<h1>Fresh meals and speedy delivery.</h1>
+				<p>
+					Krusty Krab is a cheerful food delivery app built for quick cravings and cozy meals.
+					Discover favourite dishes from local restaurants and enjoy a seamless ordering experience.
+				</p>
+				<div class="location-picker" aria-label="Pick your location">
+					<div class="location-picker__label">Pick your location<span>📍</span></div>
+					<div class="location-picker__row">
+						<input class="location-picker__field form-control" type="text" id="locationInput" name="location" placeholder="Search your delivery area or pin code">
+						<button class="location-picker__action btn" type="button" id="locationApply">Apply</button>
+					</div>
+					<p class="location-picker__hint" id="locationHint">Enter your delivery location before starting your order.</p>
+				</div>
+				<div class="hero-actions">
+					<a class="button button-orange btn" routerLink="/menus">Browse Menu</a>
+				</div>
+			</div>
+
+			<div class="col-lg-6">
+				<div class="hero-card" aria-label="Featured delivery preview">
+					<div class="delivery-window">
+						<div class="floating-badge one">30 min average delivery</div>
+						<div class="floating-badge two">Freshly packed meals</div>
+						<div class="floating-badge three">4.9 customer rating</div>
+						<div class="plate">
+							<img class="plate-image" src="https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=900&q=80" alt="Puffy Idlies served with chutney">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="container">
+		<div class="row row-cols-1 row-cols-md-3 g-3" aria-label="Key stats">
+			<div class="col">
+				<div class="stat">
+					<strong>1,200+</strong>
+					<span>orders delivered this week with a warm, reliable handoff.</span>
+				</div>
+			</div>
+			<div class="col">
+				<div class="stat">
+					<strong>120+</strong>
+					<span>local restaurants and kitchens ready for the dinner rush.</span>
+				</div>
+			</div>
+			<div class="col">
+				<div class="stat">
+					<strong>24/7</strong>
+					<span>support for late-night snacks, lunch breaks, and family dinners.</span>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="container section" id="features">
+		<div class="section-header">
+			<div>
+				<h2>Everything your cravings need</h2>
+			</div>
+		</div>
+
+		<div class="row row-cols-1 row-cols-md-3 g-3">
+			<div class="col">
+				<article class="card h-100 border-0">
+					<div class="card-icon">🍔</div>
+					<h3>Curated meals</h3>
+					<p>Highlighted dishes, combo meals, and comfort-food specials organized for quick browsing.</p>
+				</article>
+			</div>
+			<div class="col">
+				<article class="card h-100 border-0">
+					<div class="card-icon">🛵</div>
+					<h3>Fast dispatch</h3>
+					<p>Simple delivery flow with clear status updates so customers always know what comes next.</p>
+				</article>
+			</div>
+			<div class="col">
+				<article class="card h-100 border-0">
+					<div class="card-icon">💳</div>
+					<h3>Easy checkout</h3>
+					<p>Clean call-to-action sections and a confident visual hierarchy that makes ordering feel effortless.</p>
+				</article>
+			</div>
+		</div>
+	</section>
+
+	<section class="container section" id="how-it-works">
+		<div class="section-header">
+			<div>
+				<h2>How it works</h2>
+			</div>
+			<p>Just a few steps from browsing to enjoying your meal.</p>
+		</div>
+
+		<div class="row row-cols-1 row-cols-md-4 g-3">
+			<div class="col">
+				<article class="step h-100">
+					<div class="step-number">1</div>
+					<h3>Pick your craving</h3>
+					<p>Explore the menu and choose from burgers, bowls, snacks, and signature specials.</p>
+				</article>
+			</div>
+			<div class="col">
+				<article class="step h-100">
+					<div class="step-number">2</div>
+					<h3>Place the order</h3>
+					<p>Add your favorites to the cart and confirm with a quick, simple checkout.</p>
+				</article>
+			</div>
+			<div class="col">
+				<article class="step h-100">
+					<div class="step-number">3</div>
+					<h3>Track delivery</h3>
+					<p>Watch the order progress from kitchen prep to doorstep drop-off in real time.</p>
+				</article>
+			</div>
+			<div class="col">
+				<article class="step h-100">
+					<div class="step-number">4</div>
+					<h3>Enjoy the meal</h3>
+					<p>Sit back, relax, and enjoy your food while the soft pastel UI keeps the vibe light.</p>
+				</article>
+			</div>
+		</div>
+	</section>
+
+	<section class="container section" id="popular">
+		<h2 class="popular-title">Popular picks worth ordering again.</h2>
+
+		<div class="row row-cols-1 row-cols-md-3 g-3" aria-label="Popular menu items">
+			@for (item of popularItems; track item.name) {
+				<div class="col">
+					<article class="menu-card h-100">
+						<div class="menu-card__icon">{{ item.icon }}</div>
+						<h3>{{ item.name }}</h3>
+						<p>{{ item.description }}</p>
+						<div class="menu-card__meta">
+							<span class="menu-card__tag">{{ item.veg ? 'Veg' : 'Non-Veg' }}</span>
+							<span>₹{{ item.price }}</span>
+						</div>
+						<div class="menu-card__footer">
+							@if (cart.getQuantity(item) > 0) {
+								<div class="item-stepper">
+									<button class="stepper-btn" type="button" (click)="cart.decrement(item)" aria-label="Decrease quantity">−</button>
+									<span class="item-stepper__qty">{{ cart.getQuantity(item) }}</span>
+									<button class="stepper-btn" type="button" (click)="cart.increment(item)" aria-label="Increase quantity">+</button>
+								</div>
+							} @else {
+								<button class="btn add-btn" type="button" (click)="addToCart(item)">Add to cart</button>
+							}
+						</div>
+					</article>
+				</div>
+			}
+		</div>
+
+		<div class="cta">
+			<p>
+				Tap into the crowd favorites. Filter coffee, chicken biryani, and paneer butter masala are ready for quick ordering.
+			</p>
+			@if (auth.isLoggedIn) {
+				<a class="button button-primary btn" routerLink="/menus">Start Ordering Now</a>
+			} @else {
+				<a class="button button-primary btn" routerLink="/login" [queryParams]="{ role: 'CUSTOMER' }">Start Ordering Now</a>
+			}
+		</div>
+	</section>
+
+	<footer>
+		<div class="container">
+			<p>© 2026 Krusty Krab Food Delivery. Fresh vibes, friendly meals, and pastel delivery.</p>
+		</div>
+	</footer>
+</main>

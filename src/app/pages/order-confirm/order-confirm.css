@@ -1,0 +1,252 @@
+:root {
+	--bg-blue: #eaf4ff;
+	--surface: #ffffff;
+	--text: #2f3a4a;
+	--muted: #647186;
+	--sky: #bcdcff;
+	--powder: #d6e9ff;
+	--periwinkle: #cfd8ff;
+	--lavender: #7f6bb8;
+	--shadow: 0 20px 50px rgba(88, 122, 168, 0.14);
+	--radius-lg: 26px;
+	--radius-md: 18px;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+.page {
+	min-height: 100vh;
+	background: linear-gradient(180deg, #eef6ff 0%, #e4edff 100%);
+	font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+	color: var(--text);
+	padding-bottom: 60px;
+}
+
+.topbar {
+	padding: 22px 0;
+}
+
+.nav {
+	padding: 14px 20px;
+	border: 1px solid #ffffff;
+	background: var(--surface);
+	border-radius: 28px;
+	box-shadow: var(--shadow);
+}
+
+.nav .container-fluid {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-weight: 800;
+	color: var(--text);
+	text-decoration: none;
+}
+
+.back-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--muted);
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.back-link:hover {
+	color: var(--text);
+}
+
+.bill-wrap {
+	display: flex;
+	justify-content: center;
+	padding-top: 40px;
+}
+
+.bill {
+	width: 100%;
+	max-width: 480px;
+	background: rgba(255, 255, 255, 0.35);
+	backdrop-filter: blur(14px);
+	-webkit-backdrop-filter: blur(14px);
+	border: 1px solid rgba(255, 255, 255, 0.5);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow);
+	padding: 32px 28px;
+}
+
+.bill__header {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.confirm-icon {
+	font-size: 3rem;
+	margin-bottom: 8px;
+}
+
+.bill__header h1 {
+	font-weight: 800;
+	margin-bottom: 4px;
+	color: var(--text);
+}
+
+.bill__header p {
+	color: var(--muted);
+	margin: 0;
+}
+
+.eta-box {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	background: var(--powder);
+	border-radius: var(--radius-md);
+	padding: 16px 18px;
+	margin-bottom: 10px;
+}
+
+.eta-icon {
+	font-size: 1.8rem;
+}
+
+.eta-info {
+	display: flex;
+	flex-direction: column;
+}
+
+.eta-label {
+	font-size: 0.85rem;
+	color: var(--muted);
+	font-weight: 600;
+}
+
+.eta-time {
+	font-size: 1.2rem;
+	font-weight: 800;
+	color: var(--text);
+}
+
+.bill__divider {
+	border-top: 1px dashed rgba(100, 113, 134, 0.4);
+	margin: 20px 0;
+}
+
+.bill__items {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.bill__item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.bill__item-icon {
+	font-size: 1.6rem;
+	width: 44px;
+	height: 44px;
+	background: rgba(255, 255, 255, 0.5);
+	border-radius: var(--radius-md);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.bill__item-info {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.bill__item-name {
+	font-weight: 700;
+	color: var(--text);
+}
+
+.bill__item-qty {
+	font-size: 0.9rem;
+	color: var(--muted);
+	font-weight: 600;
+}
+
+.bill__item-price {
+	font-weight: 700;
+	color: var(--text);
+}
+
+.bill__totals {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.bill__row {
+	display: flex;
+	justify-content: space-between;
+	color: var(--muted);
+	font-weight: 600;
+}
+
+.bill__row--total {
+	color: var(--text);
+	font-weight: 800;
+	font-size: 1.1rem;
+	border-top: 1px solid rgba(100, 113, 134, 0.25);
+	padding-top: 10px;
+}
+
+.bill__actions {
+	text-align: center;
+	margin-top: 20px;
+}
+
+.confirm-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.view-btn {
+	background: var(--sky);
+	border: none;
+	color: #17324d;
+	font-weight: 700;
+	padding: 10px 22px;
+	border-radius: 999px;
+	transition: background 0.2s ease;
+	text-decoration: none;
+	display: inline-block;
+	text-align: center;
+}
+
+.view-btn:hover {
+	background: var(--periwinkle);
+	color: #17324d;
+}
+
+.track-btn {
+	background: var(--lavender);
+	border: none;
+	color: #ffffff;
+	font-weight: 700;
+	padding: 10px 22px;
+	border-radius: 999px;
+	cursor: pointer;
+	transition: background 0.2s ease;
+}
+
+.track-btn:hover {
+	background: #6b5aa0;
+}

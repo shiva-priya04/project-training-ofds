@@ -1,0 +1,494 @@
+:root {
+	--bg-blue: #eaf4ff;
+	--surface: #ffffff;
+	--text: #2f3a4a;
+	--muted: #647186;
+	--sky: #bcdcff;
+	--powder: #d6e9ff;
+	--periwinkle: #cfd8ff;
+	--ice: #e3f1ff;
+	--veg: #7fc9a0;
+	--nonveg: #f3a6a6;
+	--danger: #f3a6a6;
+	--shadow: 0 20px 50px rgba(88, 122, 168, 0.14);
+	--radius-lg: 26px;
+	--radius-md: 18px;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+.page {
+	min-height: 100vh;
+	background: linear-gradient(180deg, #eef6ff 0%, #e4edff 100%);
+	font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+	color: var(--text);
+	padding-bottom: 60px;
+}
+
+.topbar {
+	padding: 22px 0;
+}
+
+.nav {
+	padding: 14px 20px;
+	border: 1px solid #ffffff;
+	background: var(--surface);
+	border-radius: 28px;
+	box-shadow: var(--shadow);
+}
+
+.nav .container-fluid {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-weight: 800;
+	color: var(--text);
+	text-decoration: none;
+}
+
+.back-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--muted);
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.back-link:hover {
+	color: var(--text);
+}
+
+.back-link--btn {
+	background: none;
+	border: none;
+	padding: 0;
+	margin-bottom: 10px;
+	cursor: pointer;
+}
+
+.muted {
+	color: var(--muted);
+}
+
+.admin-shell {
+	display: flex;
+	gap: 24px;
+	align-items: flex-start;
+	padding-top: 20px;
+}
+
+.admin-nav {
+	flex: 0 0 240px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	background: var(--surface);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow);
+	padding: 16px;
+	position: sticky;
+	top: 20px;
+}
+
+.admin-nav__item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	background: none;
+	border: none;
+	text-align: left;
+	padding: 12px 14px;
+	border-radius: var(--radius-md);
+	font-weight: 700;
+	color: var(--muted);
+	cursor: pointer;
+	transition: background 0.2s ease, color 0.2s ease;
+}
+
+.admin-nav__item:hover {
+	background: var(--ice);
+	color: var(--text);
+}
+
+.admin-nav__item.active {
+	background: var(--sky);
+	color: #17324d;
+}
+
+.admin-content {
+	flex: 1;
+	min-width: 0;
+}
+
+.admin-card {
+	background: var(--surface);
+	border: 1px solid var(--powder);
+	border-radius: var(--radius-lg);
+	padding: 26px;
+	box-shadow: var(--shadow);
+}
+
+.admin-card h1 {
+	font-weight: 800;
+	margin-bottom: 18px;
+}
+
+.admin-card__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 20px;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.stat-pill {
+	background: var(--ice);
+	color: #17324d;
+	font-weight: 700;
+	padding: 6px 16px;
+	border-radius: 999px;
+	font-size: 0.9rem;
+}
+
+.profile-row {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+	margin-bottom: 20px;
+}
+
+.profile-avatar {
+	font-size: 2.6rem;
+	background: var(--ice);
+	width: 72px;
+	height: 72px;
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.profile-row h2 {
+	font-weight: 800;
+	margin: 0;
+}
+
+.profile-details {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	gap: 16px;
+	margin: 0;
+}
+
+.profile-details dt {
+	font-size: 0.8rem;
+	color: var(--muted);
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.profile-details dd {
+	margin: 4px 0 0;
+	font-weight: 700;
+}
+
+.admin-form {
+	background: var(--ice);
+	border-radius: var(--radius-md);
+	padding: 18px;
+	margin-bottom: 24px;
+}
+
+.admin-form h3 {
+	font-weight: 800;
+	margin-bottom: 12px;
+	font-size: 1.05rem;
+}
+
+.admin-form__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+	gap: 12px;
+	align-items: center;
+}
+
+.admin-restaurant-grid {
+	margin-top: 4px;
+}
+
+.admin-table-wrap {
+	background: var(--surface);
+	border-radius: var(--radius-md);
+	overflow: hidden;
+}
+
+.admin-table {
+	margin-bottom: 0;
+}
+
+.admin-table thead th {
+	background: var(--ice);
+	color: var(--muted);
+	font-size: 0.8rem;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	font-weight: 700;
+	border-bottom: none;
+	padding: 14px 16px;
+}
+
+.admin-table tbody td {
+	padding: 14px 16px;
+	border-bottom: 1px solid var(--powder);
+	vertical-align: middle;
+}
+
+.admin-table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.admin-table__icon {
+	font-size: 1.6rem;
+}
+
+.admin-table__actions {
+	display: flex;
+	gap: 8px;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+}
+
+.restaurant-card {
+	background: var(--surface);
+	border: 1px solid var(--powder);
+	border-radius: var(--radius-lg);
+	padding: 20px;
+	box-shadow: var(--shadow);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.restaurant-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 26px 60px rgba(88, 122, 168, 0.2);
+}
+
+.restaurant-card__top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 10px;
+}
+
+.restaurant-card__icon {
+	font-size: 2rem;
+	background: var(--ice);
+	width: 52px;
+	height: 52px;
+	border-radius: var(--radius-md);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.restaurant-card h3 {
+	font-weight: 800;
+	margin: 4px 0 2px;
+	color: var(--text);
+}
+
+.restaurant-card__cuisine {
+	color: var(--muted);
+	font-size: 0.92rem;
+	margin-bottom: 4px;
+}
+
+.restaurant-card__footer {
+	margin-top: auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding-top: 12px;
+}
+
+.menu-item-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.menu-item-row {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	background: var(--ice);
+	border-radius: var(--radius-md);
+	padding: 14px 16px;
+}
+
+.menu-item-row__icon {
+	font-size: 1.8rem;
+	background: var(--surface);
+	width: 48px;
+	height: 48px;
+	border-radius: var(--radius-md);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.menu-item-row__info {
+	flex: 1;
+	min-width: 0;
+}
+
+.menu-item-row__title {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.menu-item-row__title h3 {
+	font-weight: 800;
+	margin: 0;
+	font-size: 1rem;
+}
+
+.menu-item-row__info p {
+	color: var(--muted);
+	margin: 4px 0 0;
+	font-size: 0.9rem;
+}
+
+.menu-item-row__actions {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	flex-shrink: 0;
+}
+
+.price {
+	font-weight: 800;
+	color: var(--text);
+}
+
+.badge {
+	font-size: 0.75rem;
+	font-weight: 700;
+	padding: 4px 10px;
+	border-radius: 999px;
+}
+
+.badge--veg {
+	background: rgba(127, 201, 160, 0.2);
+	color: #2f7a52;
+}
+
+.badge--nonveg {
+	background: rgba(243, 166, 166, 0.25);
+	color: #b0453f;
+}
+
+.view-btn {
+	background: var(--sky);
+	border: none;
+	color: #17324d;
+	font-weight: 700;
+	padding: 8px 18px;
+	border-radius: 999px;
+	transition: background 0.2s ease;
+}
+
+.view-btn:hover {
+	background: var(--periwinkle);
+	color: #17324d;
+}
+
+.icon-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	font-weight: 800;
+	font-size: 0.9rem;
+	line-height: 1;
+	flex-shrink: 0;
+	transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.icon-btn:hover {
+	transform: scale(1.08);
+}
+
+.icon-btn--add {
+	background: rgba(127, 201, 160, 0.25);
+	color: #2f7a52;
+}
+
+.icon-btn--add:hover {
+	background: rgba(127, 201, 160, 0.45);
+}
+
+.icon-btn--delete {
+	background: rgba(243, 166, 166, 0.25);
+	color: #b0453f;
+}
+
+.icon-btn--delete:hover {
+	background: rgba(243, 166, 166, 0.45);
+}
+
+.status-badge {
+	text-transform: capitalize;
+	background: var(--powder);
+	color: #17324d;
+}
+
+.status-badge--delivered {
+	background: rgba(127, 201, 160, 0.25);
+	color: #2f7a52;
+}
+
+.status-badge--cancelled {
+	background: rgba(243, 166, 166, 0.25);
+	color: #b0453f;
+}
+
+.status-badge--out-for-delivery,
+.status-badge--preparing {
+	background: rgba(207, 216, 255, 0.6);
+	color: #3a3f8a;
+}
+
+@media (max-width: 860px) {
+	.admin-shell {
+		flex-direction: column;
+	}
+
+	.admin-nav {
+		flex-direction: row;
+		flex-wrap: wrap;
+		position: static;
+		width: 100%;
+	}
+}
