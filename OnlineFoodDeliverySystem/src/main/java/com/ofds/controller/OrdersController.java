@@ -1,11 +1,13 @@
 package com.ofds.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -41,6 +43,11 @@ public class OrdersController {
 	@PutMapping
 	public Orders updateOrder(@RequestBody Orders order) {
 		return ordersService.updateOrder(order);
+	}
+
+	@PatchMapping("/{orderId}/status")
+	public Orders updateOrderStatus(@PathVariable String orderId, @RequestBody Map<String, String> body) {
+		return ordersService.updateOrderStatus(orderId, body.get("status"));
 	}
 	
 	@DeleteMapping("/{orderId}")

@@ -33,6 +33,10 @@ public class MenuItemServiceImpl implements MenuItemService{
 		            + menuItem.getItemId());
 		}
 		
+		if(menuItem.getRestaurant() == null || menuItem.getRestaurant().getResId() == null) {
+		    throw new RestaurantNotFoundException("Restaurant ID is required to add a menu item");
+		}
+		
 		String resId = menuItem.getRestaurant().getResId();
 		Restaurant restaurant = restaurantRepository.findById(resId).orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found"));
 		menuItem.setRestaurant(restaurant);

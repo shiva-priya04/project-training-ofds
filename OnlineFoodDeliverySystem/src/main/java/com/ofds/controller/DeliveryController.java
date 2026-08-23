@@ -1,6 +1,7 @@
 package com.ofds.controller;
 
 import java.util.List;
+import java.util.Map;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,18 +27,23 @@ public class DeliveryController {
         return deliveryService.getAllDeliveries();
     }
     
-    /*@GetMapping("/agent/{agentId}")
+    @GetMapping("/delivery/agent/{agentId}")
     public List<Delivery> getDeliveriesByAgent(
             @PathVariable String agentId) {
 
         return deliveryService.getDeliveriesByAgentId(agentId);
 
-    }*/
+    }
     
 
     @GetMapping("/delivery/{delId}")
     public Delivery getDeliveryById(@PathVariable String id) {
         return deliveryService.getDeliveryById(id);
+    }
+
+    @PatchMapping("/delivery/{delId}/status")
+    public Delivery updateDeliveryStatus(@PathVariable String delId, @RequestBody Map<String, String> body) {
+        return deliveryService.updateDeliveryStatus(delId, body.get("status"));
     }
 
     @DeleteMapping("/delivery/{delId}")

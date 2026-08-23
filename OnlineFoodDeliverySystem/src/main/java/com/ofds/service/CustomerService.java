@@ -31,10 +31,24 @@ public class CustomerService {
         this.paymentRepository = paymentRepository;
     }
 
+    /**
+     * Upserts a Customer: if the ID already exists, refreshes its editable
+     * fields instead of throwing. This is required because the frontend
+     * derives a stable customerId from the phone/name (placeBackendOrder in
+     * orders.service.ts) and re-sends the same customer on every order a
+     * repeat customer places - treating that as an error used to abort the
+     * whole order-creation chain, silently dropping the order.
+     */
     public Customer addCustomer(Customer customer) {
 
-        if (customerRepository.existsById(customer.getCustomerId())) {
-            throw new RuntimeException("Customer ID already exists");
+        Optional<Customer> existing = customerRepository.findById(customer.getCustomerId());
+        if (existing.isPresent()) {
+            Customer current = existing.get();
+            current.setCustomerName(customer.getCustomerName());
+            current.setCustomerEmail(customer.getCustomerEmail());
+            current.setCustomerPhoneNo(customer.getCustomerPhoneNo());
+            current.setCustomerAddress(customer.getCustomerAddress());
+            return customerRepository.save(current);
         }
 
         return customerRepository.save(customer);

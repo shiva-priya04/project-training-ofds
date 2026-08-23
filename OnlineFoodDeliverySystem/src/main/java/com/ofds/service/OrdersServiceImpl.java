@@ -79,6 +79,14 @@ public class OrdersServiceImpl implements OrdersService {
 	}
 
 	@Override
+	public Orders updateOrderStatus(String orderId, String orderStatus) {
+		Orders order = ordersRepository.findById(orderId)
+				.orElseThrow(() -> new com.ofds.exception.OrdersNotFoundException("Order not found with ID: " + orderId));
+		order.setOrderStatus(orderStatus);
+		return ordersRepository.save(order);
+	}
+
+	@Override
 	public void deleteOrder(String orderId) {
 		
 		ordersRepository.deleteById(orderId);

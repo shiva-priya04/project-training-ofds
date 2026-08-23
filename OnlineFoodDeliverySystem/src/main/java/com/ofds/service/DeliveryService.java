@@ -7,6 +7,7 @@ public interface DeliveryService {
 	Delivery getDeliveryById(String delId);
 	List<Delivery> getAllDeliveries();
 	List<Delivery> getDeliveriesByAgentId(String agentId);
+	Delivery updateDeliveryStatus(String delId, String delStatus);
 	void deleteDelivery(String delId);
 	
 }

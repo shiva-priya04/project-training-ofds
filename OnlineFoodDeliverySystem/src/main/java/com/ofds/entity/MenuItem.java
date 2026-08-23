@@ -3,6 +3,7 @@ package com.ofds.entity;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,10 +43,13 @@ public class MenuItem {
 	@Column(name = "price")
 	private Double price;
 	
-	//@JsonIgnore
+	// WRITE_ONLY (not @JsonIgnore): the frontend must be able to send
+	// { "restaurant": { "resId": "..." } } when creating a menu item, but we
+	// still must not include restaurant in the JSON response, otherwise
+	// Restaurant.menuItems <-> MenuItem.restaurant would serialize infinitely.
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "resId", referencedColumnName = "resId")
-	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Restaurant restaurant;
 	
 	@ManyToMany(mappedBy = "menus")
