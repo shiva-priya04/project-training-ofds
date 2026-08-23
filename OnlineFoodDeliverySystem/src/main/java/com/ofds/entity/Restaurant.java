@@ -43,7 +43,10 @@ public class Restaurant {
     @Email(message = "Invalid email format")
     @Column(name = "resEmail")
     private String resEmail;
-    
+
+    @Column(name = "resType", length = 10)
+    private String resType = "veg";
+
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MenuItem> menuItems = new ArrayList<>();
 
@@ -97,6 +100,14 @@ public class Restaurant {
 
 	public void setResEmail(String resEmail) {
 		this.resEmail = resEmail;
+	}
+
+	public String getResType() {
+		return resType;
+	}
+
+	public void setResType(String resType) {
+		this.resType = resType;
 	}
 
 	public List<MenuItem> getMenuItems() {

@@ -7,15 +7,28 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.ofds.entity.Customer;
+import com.ofds.entity.Delivery;
+import com.ofds.entity.Orders;
+import com.ofds.entity.Payment;
 import com.ofds.repository.CustomerRepository;
+import com.ofds.repository.DeliveryRepository;
+import com.ofds.repository.OrdersRepository;
+import com.ofds.repository.PaymentRepository;
 
 @Service
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final OrdersRepository ordersRepository;
+    private final DeliveryRepository deliveryRepository;
+    private final PaymentRepository paymentRepository;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(CustomerRepository customerRepository, OrdersRepository ordersRepository,
+            DeliveryRepository deliveryRepository, PaymentRepository paymentRepository) {
         this.customerRepository = customerRepository;
+        this.ordersRepository = ordersRepository;
+        this.deliveryRepository = deliveryRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     public Customer addCustomer(Customer customer) {
@@ -58,11 +71,24 @@ public class CustomerService {
     }
 
     public boolean deleteCustomer(String customerId) {
-        if (customerRepository.existsById(customerId)) {
-            customerRepository.deleteById(customerId);
-            return true;
-        } else {
+        if (!customerRepository.existsById(customerId)) {
             return false;
         }
+
+        // Remove the customer's order history first so the FK constraint on
+        // orders.customerId does not block deletion. Deliveries and payments
+        // tied to those orders are removed too since they reference the order.
+        List<Orders> orders = ordersRepository.findByCustomerCustomerId(customerId);
+        for (Orders order : orders) {
+            List<Delivery> deliveries = deliveryRepository.findByOrder_OrderId(order.getOrderId());
+            deliveryRepository.deleteAll(deliveries);
+
+            List<Payment> payments = paymentRepository.findByOrderId(order.getOrderId());
+            paymentRepository.deleteAll(payments);
+        }
+        ordersRepository.deleteAll(orders);
+
+        customerRepository.deleteById(customerId);
+        return true;
     }
 }

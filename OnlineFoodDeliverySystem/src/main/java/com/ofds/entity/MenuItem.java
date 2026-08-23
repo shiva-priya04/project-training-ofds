@@ -2,7 +2,7 @@ package com.ofds.entity;
 
 import java.util.List;
 
-//import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,9 +45,11 @@ public class MenuItem {
 	//@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "resId", referencedColumnName = "resId")
+	@JsonIgnore
 	private Restaurant restaurant;
 	
 	@ManyToMany(mappedBy = "menus")
+	@JsonIgnore
 	private List<Orders> orders;
 	
 	public MenuItem(){

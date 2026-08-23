@@ -10,4 +10,6 @@ import com.ofds.entity.Delivery;
 public interface DeliveryRepository extends JpaRepository<Delivery, String> {
 	
 	List<Delivery> findByAgentAgentId(String agentId);
+
+	List<Delivery> findByOrder_OrderId(String orderId);
 }
