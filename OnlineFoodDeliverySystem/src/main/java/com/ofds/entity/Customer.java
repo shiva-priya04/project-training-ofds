@@ -23,7 +23,7 @@ import jakarta.persistence.OneToMany;
 public class Customer {
 
 	@Id
-	@Column(name = "customerId")
+	@Column(name = "customerId", length = 20)
 	@NotBlank(message = "Customer ID is required")
 	private String customerId;
 

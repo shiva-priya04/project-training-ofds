@@ -16,7 +16,7 @@ public class Agent {
 
     @Id
     @NotBlank(message = "Agent ID is required")
-    @Column(name = "agentId")
+    @Column(name = "agentId", length = 20)
     private String agentId;
 
     @NotBlank(message = "Agent Name is required")

@@ -22,7 +22,7 @@ public class Restaurant {
 
     @Id
     @NotBlank(message = "Restaurant ID cannot be empty")
-    @Column(name = "resId")
+    @Column(name = "resId", length = 100)
     private String resId;
 
     @NotBlank(message = "Restaurant name cannot be empty")

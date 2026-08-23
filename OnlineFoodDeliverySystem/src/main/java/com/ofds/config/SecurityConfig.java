@@ -2,32 +2,22 @@ package com.ofds.config;
 
 import org.springframework.context.annotation.*;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.
-AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationManager;
 
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.
-authentication.configuration.
-AuthenticationConfiguration;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
-import org.springframework.security.config.annotation.
-web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
-import org.springframework.security.config.
-http.SessionCreationPolicy;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
-import org.springframework.security.crypto.bcrypt.
-BCryptPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import org.springframework.security.crypto.password.
-PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import org.springframework.security.web.
-SecurityFilterChain;
+import org.springframework.security.web.SecurityFilterChain;
 
-import org.springframework.security.web.
-authentication.
-UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -40,90 +30,71 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
-    private final JwtFilter jwtFilter;
+	private final JwtFilter jwtFilter;
 
-    public SecurityConfig(JwtFilter jwtFilter) {
-        this.jwtFilter = jwtFilter;
-    }
+	public SecurityConfig(JwtFilter jwtFilter) {
+		this.jwtFilter = jwtFilter;
+	}
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-    @Bean
-    AuthenticationManager authenticationManager(
-            AuthenticationConfiguration config)
-            throws Exception {
+	@Bean
+	AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 
-        return config.getAuthenticationManager();
-    }
+		return config.getAuthenticationManager();
+	}
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOriginPatterns(List.of("http://localhost:*"));
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedHeaders(List.of("*"));
+		configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
 
-    @Bean
-    SecurityFilterChain securityFilterChain(
-            HttpSecurity http)
-            throws Exception {
+	@Bean
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(csrf -> csrf.disable())
+		http.csrf(csrf -> csrf.disable())
 
-                .cors(Customizer.withDefaults())
+				.cors(Customizer.withDefaults())
 
-                .authorizeHttpRequests(auth -> auth
+				.authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/auth/**")
-                        .permitAll()
+						.requestMatchers("/auth/**").permitAll()
 
-                        .requestMatchers("/api/**")
-                        .permitAll()
+						.requestMatchers("/api/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/restaurant/**")
-                        .permitAll()
+						.requestMatchers(HttpMethod.GET, "/restaurant/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/menu/**")
-                        .permitAll()
+						.requestMatchers(HttpMethod.GET, "/menu/**").permitAll()
 
-                        .requestMatchers("/restaurant/**")
-                        .hasAnyRole("ADMIN")
+						.requestMatchers("/restaurant/**").hasAnyRole("ADMIN")
 
-                        .requestMatchers("/menu/**")
-                        .hasRole("ADMIN")
+						.requestMatchers("/menu/**").hasRole("ADMIN")
 
-                        .requestMatchers("/orders/**")
-                        .hasAnyRole("CUSTOMER","ADMIN")
+						.requestMatchers("/orders/**").hasAnyRole("CUSTOMER", "ADMIN")
 
-                        .requestMatchers("/payment/**")
-                        .hasRole("CUSTOMER")
+						.requestMatchers("/payment/**").hasRole("CUSTOMER")
 
-                        .requestMatchers("/agent/**")
-                        .hasRole("AGENT")
+						.requestMatchers("/agent/**").hasAnyRole("ADMIN", "AGENT")
 
-                        .requestMatchers("/delivery/**")
-                        .hasAnyRole("AGENT","ADMIN")
-                        
-                        .anyRequest()
-                        .authenticated())
+						.requestMatchers("/delivery/**").hasAnyRole("AGENT", "ADMIN")
 
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(
-                                SessionCreationPolicy.STATELESS))
+						.anyRequest().authenticated())
 
-                .addFilterBefore(
-                        jwtFilter,
-                        UsernamePasswordAuthenticationFilter.class);
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-        return http.build();
-    }
+				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+		return http.build();
+	}
 }

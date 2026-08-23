@@ -25,11 +25,20 @@ implements UserDetailsService {
                         new UsernameNotFoundException(
                                 "User not found"));
 
+        String normalizedRole = normalizeRole(user.getRole());
+
         return org.springframework.security.core.userdetails
                 .User
                 .withUsername(user.getUsername())
                 .password(user.getPassword())
-                .roles(user.getRole())
+                .authorities("ROLE_" + normalizedRole)
                 .build();
+    }
+
+    private String normalizeRole(String role) {
+        if (role == null || role.isBlank()) {
+            return "CUSTOMER";
+        }
+        return role.trim().replaceFirst("(?i)^ROLE_", "").toUpperCase();
     }
 }

@@ -24,7 +24,7 @@ public class MenuItem {
 	
 	@Id
 	@NotBlank(message = "Item ID cannot be empty")
-	@Column(name = "itemId")
+	@Column(name = "itemId", length = 100)
 	private String itemId;
 	
 	@NotBlank(message = "Item name cannot be empty")
