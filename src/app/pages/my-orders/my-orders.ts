@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { OrdersService, TrackedOrder, TrackingStage } from '../../orders.service';
 
@@ -11,6 +11,8 @@ export type OrderStatus = 'placed' | 'delivered' | 'cancelled';
   styleUrl: './my-orders.css',
 })
 export class MyOrders {
+  actionError = signal<string | null>(null);
+
   constructor(private ordersService: OrdersService, private router: Router) {
     this.ordersService.refresh();
   }
@@ -33,6 +35,21 @@ export class MyOrders {
 
   trackOrder(order: TrackedOrder): void {
     this.router.navigate(['/tracking-order', order.orderNumber]);
+  }
+
+  canCancel(order: TrackedOrder): boolean {
+    return order.trackingStage === 'preparing';
+  }
+
+  cancelOrder(orderNumber: string): void {
+    if (!confirm('Cancel this order?')) return;
+    this.actionError.set(null);
+    this.ordersService.cancelOrder(orderNumber).subscribe((err) => {
+      if (err) {
+        this.actionError.set(err);
+        return;
+      }
+    });
   }
 
   status(stage: TrackingStage): OrderStatus {

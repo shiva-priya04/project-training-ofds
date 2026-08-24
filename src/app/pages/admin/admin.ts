@@ -130,12 +130,16 @@ export class Admin {
     });
   }
 
-  deleteMenuItem(itemName: string): void {
+  deleteMenuItem(itemId?: string): void {
     if (this.selectedRestaurantId === null) {
       return;
     }
+    if (!itemId) {
+      this.actionError.set('Not saved: this item has no backend ID yet. Please refresh and try again.');
+      return;
+    }
     this.actionError.set(null);
-    this.adminService.deleteMenuItem(this.selectedRestaurantId, itemName).subscribe((error) => {
+    this.adminService.deleteMenuItem(this.selectedRestaurantId, itemId).subscribe((error) => {
       if (error) {
         this.actionError.set(error);
       }

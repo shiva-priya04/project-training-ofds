@@ -3,6 +3,7 @@ import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Observable, catchError, forkJoin, map, of, switchMap, tap } from 'rxjs';
 import { environment } from '../environments/environment';
+import { AuthService } from './auth.service';
 import { MenuItem, RestaurantMenu } from './pages/menus/menu-data';
 
 export interface NewRestaurant {
@@ -27,12 +28,14 @@ interface BackendMenuItem {
   itemName: string;
   description: string;
   price: number;
+  veg?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
 export class RestaurantsService {
   private readonly apiUrl = environment.apiUrl;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly auth = inject(AuthService);
   private readonly restaurantsSignal = signal<RestaurantMenu[]>([]);
   readonly restaurants = this.restaurantsSignal.asReadonly();
 
@@ -81,10 +84,17 @@ export class RestaurantsService {
         name: item.itemName,
         description: item.description,
         price: item.price,
-        veg: true,
+        veg: this.toVegFlag(item.veg),
         icon: '🍽️',
       })),
     };
+  }
+
+  private toVegFlag(value: unknown): boolean {
+    if (value === false || value === 'false' || value === 0 || value === '0' || value === 'non-veg') {
+      return false;
+    }
+    return true;
   }
 
   /** Returns null on success, or an error message if the backend rejected the write (e.g. missing ADMIN role). */
@@ -112,7 +122,7 @@ export class RestaurantsService {
       resEmail: `${resId.toLowerCase()}@krustykrab.com`,
       resType: data.type ?? 'veg',
     };
-    return this.http.post<BackendRestaurant>(`${this.apiUrl}/restaurant/add`, payload).pipe(
+    return this.http.post<BackendRestaurant>(`${this.apiUrl}/restaurant/add`, payload, this.authorizedJsonOptions()).pipe(
       map(() => {
         this.refresh();
         return null;
@@ -125,7 +135,7 @@ export class RestaurantsService {
   }
 
   deleteRestaurant(id: string): Observable<string | null> {
-    return this.http.delete(`${this.apiUrl}/restaurant/delete/${id}`, { responseType: 'text' }).pipe(
+    return this.http.delete(`${this.apiUrl}/restaurant/delete/${id}`, this.authorizedTextOptions()).pipe(
       map(() => {
         this.refresh();
         return null;
@@ -135,10 +145,31 @@ export class RestaurantsService {
   }
 
   private toErrorMessage(err: HttpErrorResponse): string {
+    const backendMessage =
+      typeof err.error === 'string'
+        ? err.error
+        : typeof err.error?.message === 'string'
+          ? err.error.message
+          : typeof err.error?.error === 'string'
+            ? err.error.error
+            : null;
+
     if (err.status === 401 || err.status === 403) {
-      return 'Not saved: you must be logged in with an ADMIN account to manage restaurants and menus.';
+      return backendMessage ?? 'Not saved: you must be logged in with an ADMIN account to manage restaurants and menus.';
     }
-    return `Not saved: backend error (${err.status || 'network'}). Check the server is running.`;
+    return backendMessage ?? `Not saved: backend error (${err.status || 'network'}). Check the server is running.`;
+  }
+
+  private authorizedJsonOptions() {
+    const token = this.auth.token;
+    return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+  }
+
+  private authorizedTextOptions() {
+    const token = this.auth.token;
+    return token
+      ? { responseType: 'text' as const, headers: { Authorization: `Bearer ${token}` } }
+      : { responseType: 'text' as const };
   }
 
   getById(id: string): RestaurantMenu | undefined {
@@ -151,6 +182,7 @@ export class RestaurantsService {
       ...item,
       itemId,
       resId: restaurantId,
+      veg: this.toVegFlag(item.veg),
       icon: item.icon ?? '🍽️',
     };
     const previousRestaurants = this.restaurantsSignal();
@@ -167,10 +199,11 @@ export class RestaurantsService {
       itemName: item.name,
       description: item.description,
       price: item.price,
+      veg: this.toVegFlag(item.veg),
       restaurant: { resId: restaurantId },
     };
     console.debug('[RestaurantsService] addMenuItem payload:', payload);
-    return this.http.post(`${this.apiUrl}/menu/add`, payload).pipe(
+    return this.http.post(`${this.apiUrl}/menu/add`, payload, this.authorizedJsonOptions()).pipe(
       tap((res) => console.debug('[RestaurantsService] addMenuItem response:', res)),
       map(() => {
         this.refresh();
@@ -184,15 +217,16 @@ export class RestaurantsService {
     );
   }
 
-  deleteMenuItem(restaurantId: string, itemName: string): Observable<string | null> {
-    const restaurant = this.getById(restaurantId);
-    const item = restaurant?.items.find((menuItem) => menuItem.name === itemName);
+  deleteMenuItem(restaurantId: string, itemId: string): Observable<string | null> {
+    const hasItem = this
+      .getById(restaurantId)
+      ?.items.some((menuItem) => menuItem.itemId === itemId);
 
-    if (!item?.itemId) {
+    if (!itemId || !hasItem) {
       return of('Not saved: this item was never synced with the backend.');
     }
 
-    return this.http.delete(`${this.apiUrl}/menu/delete/${item.itemId}`, { responseType: 'text' }).pipe(
+    return this.http.delete(`${this.apiUrl}/menu/delete/${itemId}`, this.authorizedTextOptions()).pipe(
       map(() => {
         this.refresh();
         return null;

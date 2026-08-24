@@ -79,7 +79,7 @@ export class OrdersService {
               name: m.itemName ?? m.itemName,
               description: m.description ?? m.description,
               price: m.price ?? m.price,
-              veg: true,
+              veg: this.toVegFlag(m.veg),
               icon: '🍽️',
             } as MenuItem,
           }));
@@ -169,7 +169,31 @@ export class OrdersService {
     return hash;
   }
 
+  private toVegFlag(value: unknown): boolean {
+    if (value === false || value === 'false' || value === 0 || value === '0' || value === 'non-veg') {
+      return false;
+    }
+    return true;
+  }
+
   getByNumber(orderNumber: string): TrackedOrder | undefined {
     return this.ordersSignal().find((order) => order.orderNumber === orderNumber);
+  }
+
+  cancelOrder(orderNumber: string): Observable<string | null> {
+    return this.http.patch(`${this.apiUrl}/orders/${orderNumber}/status`, { status: 'CANCELLED' }).pipe(
+      map(() => {
+        this.refresh();
+        return null;
+      }),
+      catchError((err: HttpErrorResponse) => of(this.toErrorMessage(err)))
+    );
+  }
+
+  private toErrorMessage(err: HttpErrorResponse): string {
+    if (err.status === 401 || err.status === 403) {
+      return 'Not saved: you must be logged in to manage your orders.';
+    }
+    return `Not saved: backend error (${err.status || 'network'}). Check the server is running.`;
   }
 }

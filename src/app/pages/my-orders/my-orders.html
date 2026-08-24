@@ -70,6 +70,9 @@
 					@if (isTrackable(order)) {
 						<div class="order-card__actions">
 							<button class="btn track-btn" type="button" (click)="trackOrder(order)">Track Order</button>
+							@if (canCancel(order)) {
+								<button class="btn cancel-btn" type="button" (click)="cancelOrder(order.orderNumber)">Cancel Order</button>
+							}
 						</div>
 					}
 				</div>

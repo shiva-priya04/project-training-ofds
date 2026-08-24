@@ -62,8 +62,8 @@ export class AdminService {
     return this.restaurantsService.addMenuItem(restaurantId, item);
   }
 
-  deleteMenuItem(restaurantId: string, itemName: string): Observable<string | null> {
-    return this.restaurantsService.deleteMenuItem(restaurantId, itemName);
+  deleteMenuItem(restaurantId: string, itemId: string): Observable<string | null> {
+    return this.restaurantsService.deleteMenuItem(restaurantId, itemId);
   }
 
   // ----- Orders -----

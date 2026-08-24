@@ -82,7 +82,7 @@
 						</form>
 
 						<div class="menu-item-list">
-							@for (item of restaurant.items; track item.name) {
+							@for (item of restaurant.items; track item.itemId ?? item.name) {
 								<article class="menu-item-row">
 									<span class="menu-item-row__icon">{{ item.icon }}</span>
 									<div class="menu-item-row__info">
@@ -96,7 +96,7 @@
 									</div>
 									<div class="menu-item-row__actions">
 										<span class="price">₹{{ item.price }}</span>
-										<button class="btn icon-btn icon-btn--delete" type="button" (click)="deleteMenuItem(item.name)" aria-label="Delete item">✕</button>
+										<button class="btn icon-btn icon-btn--delete" type="button" (click)="deleteMenuItem(item.itemId)" aria-label="Delete item">✕</button>
 									</div>
 								</article>
 							} @empty {
