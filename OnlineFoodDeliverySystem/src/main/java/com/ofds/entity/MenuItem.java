@@ -42,6 +42,9 @@ public class MenuItem {
 	@Positive(message = "Price must be greater than 0")
 	@Column(name = "price")
 	private Double price;
+
+	@Column(name = "veg")
+	private Boolean veg = true;
 	
 	// WRITE_ONLY (not @JsonIgnore): the frontend must be able to send
 	// { "restaurant": { "resId": "..." } } when creating a menu item, but we
@@ -66,6 +69,14 @@ public class MenuItem {
 		this.description = description;
 		this.price = price;
 		this.restaurant = restaurant;
+	}
+
+	public Boolean getVeg() {
+		return veg;
+	}
+
+	public void setVeg(Boolean veg) {
+		this.veg = veg;
 	}
 
 	public String getItemId() {

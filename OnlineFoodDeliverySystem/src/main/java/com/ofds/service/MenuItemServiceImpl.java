@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ofds.entity.MenuItem;
 import com.ofds.entity.Restaurant;
@@ -40,6 +41,10 @@ public class MenuItemServiceImpl implements MenuItemService{
 		String resId = menuItem.getRestaurant().getResId();
 		Restaurant restaurant = restaurantRepository.findById(resId).orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found"));
 		menuItem.setRestaurant(restaurant);
+		// default veg to true if not provided
+		if (menuItem.getVeg() == null) {
+			menuItem.setVeg(true);
+		}
 		return menuItemRepository.save(menuItem);
 	}
 	
@@ -68,12 +73,18 @@ public class MenuItemServiceImpl implements MenuItemService{
 	    existingItem.setItemName(menuItem.getItemName());
 	    existingItem.setDescription(menuItem.getDescription());
 	    existingItem.setPrice(menuItem.getPrice());
+	    // update veg if provided, otherwise keep existing value
+	    if (menuItem.getVeg() != null) {
+	        existingItem.setVeg(menuItem.getVeg());
+	    }
 		return menuItemRepository.save(existingItem);
 	}
 	
 	@Override
+	@Transactional
 	public void deleteMenuItem(String itemId) {
 		MenuItem item = menuItemRepository.findById(itemId).orElseThrow(() -> new ItemNotFoundException("Menu item not found"));
+		menuItemRepository.deleteOrderMenuLinksByItemId(itemId);
 		menuItemRepository.delete(item);
 	}
 
