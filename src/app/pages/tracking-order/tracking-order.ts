@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { OrdersService, TrackedOrder } from '../../orders.service';
 
@@ -14,8 +14,9 @@ interface TrackingStep {
   templateUrl: './tracking-order.html',
   styleUrl: './tracking-order.css',
 })
-export class TrackingOrder {
-  readonly order: TrackedOrder | undefined;
+export class TrackingOrder implements OnInit, OnDestroy {
+  private readonly orderNumber: string;
+  private pollHandle?: ReturnType<typeof setInterval>;
 
   readonly steps: TrackingStep[] = [
     { key: 'preparing', label: 'Preparing your meal', icon: '👨‍🍳' },
@@ -24,8 +25,24 @@ export class TrackingOrder {
   ];
 
   constructor(route: ActivatedRoute, private ordersService: OrdersService) {
-    const orderNumber = route.snapshot.paramMap.get('orderNumber') ?? '';
-    this.order = this.ordersService.getByNumber(orderNumber);
+    this.orderNumber = route.snapshot.paramMap.get('orderNumber') ?? '';
+  }
+
+  get order(): TrackedOrder | undefined {
+    return this.ordersService.getByNumber(this.orderNumber);
+  }
+
+  ngOnInit(): void {
+    this.ordersService.refresh();
+    // Poll the backend so the delivery status agents set stays in sync here
+    // without requiring the customer to manually reload the page.
+    this.pollHandle = setInterval(() => this.ordersService.refresh(), 8000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.pollHandle) {
+      clearInterval(this.pollHandle);
+    }
   }
 
   subtotal(): number {

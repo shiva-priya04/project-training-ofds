@@ -60,9 +60,14 @@ export class OrdersService {
         const tracked: TrackedOrder[] = backendOrders.map((o) => {
           const restaurantName = o.restaurant?.resName ?? o.restaurant?.resId ?? '';
           const trackingStage: TrackedOrder['trackingStage'] = (() => {
-            const s = (o.orderStatus || '').toString().toLowerCase();
-            if (s.includes('deliver')) return 'delivered';
-            if (s.includes('out')) return 'out-for-delivery';
+            // Match on the exact backend status values (PLACED, OUT_FOR_DELIVERY,
+            // DELIVERED, CANCELLED) rather than loose substring checks - "out for
+            // delivery" also contains the substring "deliver", so a naive
+            // deliver-before-out check would misclassify it as delivered.
+            const s = (o.orderStatus || '').toString().trim().toUpperCase();
+            if (s === 'DELIVERED') return 'delivered';
+            if (s === 'CANCELLED') return 'cancelled';
+            if (s === 'OUT_FOR_DELIVERY') return 'out-for-delivery';
             return 'preparing';
           })();
 
@@ -109,8 +114,9 @@ export class OrdersService {
    * Errors are swallowed so the local order flow always succeeds even if the backend is unreachable.
    */
   placeBackendOrder(request: PlaceBackendOrderRequest): Observable<string | null> {
-    const customerId = 'CUST' + String(Math.abs(this.hash(request.customerPhone || request.customerName)) % 100000000).padStart(8, '0');
-    const orderId = 'ORD' + Date.now().toString().slice(-8);
+    const customerId = 'CUST' + String(Math.abs(this.hash(request.customerPhone || request.customerName)) % 1_000_000).padStart(6, '0');
+    // Backend orderId column is varchar(10); keep the generated id within that limit.
+    const orderId = 'ORD' + Date.now().toString().slice(-7);
 
     const customerPayload = {
       customerId,
@@ -165,11 +171,5 @@ export class OrdersService {
 
   getByNumber(orderNumber: string): TrackedOrder | undefined {
     return this.ordersSignal().find((order) => order.orderNumber === orderNumber);
-  }
-
-  updateStage(orderNumber: string, stage: TrackingStage): void {
-    this.ordersSignal.update((orders) =>
-      orders.map((order) => (order.orderNumber === orderNumber ? { ...order, trackingStage: stage } : order))
-    );
   }
 }

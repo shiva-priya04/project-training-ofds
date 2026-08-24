@@ -15,7 +15,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 || error.status === 403) {
+      // 401 = not authenticated (missing/invalid/expired token) -> session is
+      // no longer valid, force the user back to login.
+      // 403 = authenticated but not permitted for this specific action (e.g.
+      // logged in as CUSTOMER trying an ADMIN-only endpoint) -> the session
+      // itself is still fine, so let the error bubble up and show an inline
+      // message instead of kicking the user out.
+      if (error.status === 401) {
         auth.logout();
         router.navigate(['/login']);
       }

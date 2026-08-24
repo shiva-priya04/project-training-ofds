@@ -11,16 +11,18 @@ import { RestaurantsService } from '../../restaurants.service';
   styleUrl: './menus.css',
 })
 export class Menus {
-  restaurantMenu: RestaurantMenu | undefined;
-  allMenus: RestaurantMenu[] = [];
+  private readonly restaurantId: string | null;
 
-  constructor(route: ActivatedRoute, public cart: CartService, restaurantsService: RestaurantsService) {
-    const idParam = route.snapshot.paramMap.get('id');
-    if (idParam !== null) {
-      this.restaurantMenu = restaurantsService.getById(idParam);
-    } else {
-      this.allMenus = restaurantsService.restaurants();
-    }
+  constructor(route: ActivatedRoute, public cart: CartService, private restaurantsService: RestaurantsService) {
+    this.restaurantId = route.snapshot.paramMap.get('id');
+  }
+
+  get restaurantMenu(): RestaurantMenu | undefined {
+    return this.restaurantId !== null ? this.restaurantsService.getById(this.restaurantId) : undefined;
+  }
+
+  get allMenus(): RestaurantMenu[] {
+    return this.restaurantId === null ? this.restaurantsService.restaurants() : [];
   }
 
   addToCart(item: MenuItem): void {

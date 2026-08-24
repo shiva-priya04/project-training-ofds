@@ -38,7 +38,7 @@ export class AgentsService {
   /** Returns null on success, or an error message if the backend rejected the write. */
   addAgent(data: NewAgent): Observable<string | null> {
     const payload = {
-      agentId: 'AGT' + Date.now(),
+      agentId: this.buildAgentId(),
       agentName: data.agentName,
       agentPhoneNo: data.agentPhoneNo,
     };
@@ -50,6 +50,13 @@ export class AgentsService {
       catchError((err: HttpErrorResponse) => of(this.toErrorMessage(err)))
     );
   }
+
+  /** Backend agentId column is varchar(10); keep the generated id within that limit. */
+  private buildAgentId(): string {
+    const shortId = (Date.now() % 1_000_000).toString().padStart(6, '0');
+    return 'AGT' + shortId;
+  }
+
 
   deleteAgent(agentId: string): Observable<string | null> {
     return this.http.delete(`${this.apiUrl}/agent/${agentId}`, { responseType: 'text' }).pipe(

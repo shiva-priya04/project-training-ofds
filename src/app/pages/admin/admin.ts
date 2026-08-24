@@ -1,12 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { RestaurantsService } from '../../restaurants.service';
-import { OrdersService } from '../../orders.service';
-import { AgentsService, NewAgent } from '../../agents.service';
+import { AdminService, AdminTab } from '../../admin.service';
+import { NewAgent } from '../../agents.service';
+import { NewDelivery } from '../../delivery.service';
+import { AuthService } from '../../auth.service';
 import { MenuItem, RestaurantMenu } from '../menus/menu-data';
-
-type AdminTab = 'profile' | 'restaurants' | 'orders' | 'delivery' | 'agents';
 
 interface NewRestaurantForm {
   name: string;
@@ -31,14 +30,18 @@ interface NewMenuItemForm {
 export class Admin {
   readonly activeTab = signal<AdminTab>('profile');
 
-  readonly profile = {
-    name: 'Priya Raman',
-    email: 'priya.raman@krustykrab.com',
-    role: 'Super Admin',
-    phone: '+91 98765 43210',
-    joined: 'March 2023',
-    avatar: '🧑‍💼',
-  };
+  readonly profile = computed(() => {
+    const username = this.auth.username();
+    const role = this.auth.role();
+    return {
+      name: username ?? 'Admin',
+      email: username ? `${username}@ofds-admin.local` : 'Not provided',
+      role: role === 'ADMIN' ? 'Super Admin' : role ?? 'Admin',
+      phone: 'Not provided',
+      joined: 'Not provided',
+      avatar: '🧑‍💼',
+    };
+  });
 
   selectedRestaurantId: string | null = null;
   actionError = signal<string | null>(null);
@@ -49,11 +52,10 @@ export class Admin {
   newAgent: NewAgent = { agentName: '', agentPhoneNo: '' };
   agentActionError = signal<string | null>(null);
 
-  constructor(
-    private restaurantsService: RestaurantsService,
-    private ordersService: OrdersService,
-    private agentsService: AgentsService
-  ) {}
+  newDelivery: NewDelivery = { orderId: '', agentId: '', estimatedTimeOfArrival: '' };
+  deliveryActionError = signal<string | null>(null);
+
+  constructor(private adminService: AdminService, private auth: AuthService) {}
 
   setTab(tab: AdminTab): void {
     this.activeTab.set(tab);
@@ -61,22 +63,11 @@ export class Admin {
       this.selectedRestaurantId = null;
     }
     // Targeted refresh: fetch fresh data only when the admin views that tab
-    if (tab === 'restaurants') {
-      this.restaurantsService.refresh();
-    }
-    if (tab === 'orders') {
-      this.ordersService.refresh();
-    }
-    if (tab === 'agents') {
-      this.agentsService.refresh();
-    }
-    if (tab === 'delivery') {
-      this.ordersService.refresh();
-    }
+    this.adminService.refreshForTab(tab);
   }
 
   get restaurants(): RestaurantMenu[] {
-    return this.restaurantsService.restaurants();
+    return this.adminService.restaurants;
   }
 
   get totalRestaurants(): number {
@@ -85,7 +76,7 @@ export class Admin {
 
   get selectedRestaurant(): RestaurantMenu | undefined {
     return this.selectedRestaurantId !== null
-      ? this.restaurantsService.getById(this.selectedRestaurantId)
+      ? this.adminService.getRestaurantById(this.selectedRestaurantId)
       : undefined;
   }
 
@@ -102,7 +93,7 @@ export class Admin {
       return;
     }
     this.actionError.set(null);
-    this.restaurantsService.addRestaurant({ ...this.newRestaurant }).subscribe((error) => {
+    this.adminService.addRestaurant({ ...this.newRestaurant }).subscribe((error) => {
       if (error) {
         this.actionError.set(error);
         return;
@@ -113,7 +104,7 @@ export class Admin {
 
   deleteRestaurant(id: string): void {
     this.actionError.set(null);
-    this.restaurantsService.deleteRestaurant(id).subscribe((error) => {
+    this.adminService.deleteRestaurant(id).subscribe((error) => {
       if (error) {
         this.actionError.set(error);
         return;
@@ -130,7 +121,7 @@ export class Admin {
     }
     this.actionError.set(null);
     const item: MenuItem = { ...this.newItem, icon: '🍽️' };
-    this.restaurantsService.addMenuItem(this.selectedRestaurantId, item).subscribe((error) => {
+    this.adminService.addMenuItem(this.selectedRestaurantId, item).subscribe((error) => {
       if (error) {
         this.actionError.set(error);
         return;
@@ -144,7 +135,7 @@ export class Admin {
       return;
     }
     this.actionError.set(null);
-    this.restaurantsService.deleteMenuItem(this.selectedRestaurantId, itemName).subscribe((error) => {
+    this.adminService.deleteMenuItem(this.selectedRestaurantId, itemName).subscribe((error) => {
       if (error) {
         this.actionError.set(error);
       }
@@ -152,15 +143,15 @@ export class Admin {
   }
 
   get orders() {
-    return this.ordersService.orders();
+    return this.adminService.orders;
   }
 
   get activeDeliveries() {
-    return this.orders.filter((order) => order.trackingStage === 'out-for-delivery');
+    return this.adminService.activeDeliveries;
   }
 
   get agents() {
-    return this.agentsService.agents();
+    return this.adminService.agents;
   }
 
   get totalAgents(): number {
@@ -172,7 +163,7 @@ export class Admin {
       return;
     }
     this.agentActionError.set(null);
-    this.agentsService.addAgent({ ...this.newAgent }).subscribe((error) => {
+    this.adminService.addAgent({ ...this.newAgent }).subscribe((error) => {
       if (error) {
         this.agentActionError.set(error);
         return;
@@ -183,10 +174,42 @@ export class Admin {
 
   deleteAgent(agentId: string): void {
     this.agentActionError.set(null);
-    this.agentsService.deleteAgent(agentId).subscribe((error) => {
+    this.adminService.deleteAgent(agentId).subscribe((error) => {
       if (error) {
         this.agentActionError.set(error);
       }
     });
   }
+
+  get deliveries() {
+    return this.adminService.deliveries;
+  }
+
+  get unassignedOrders() {
+    return this.adminService.unassignedOrders;
+  }
+
+  assignDelivery(): void {
+    if (!this.newDelivery.orderId || !this.newDelivery.agentId || !this.newDelivery.estimatedTimeOfArrival) {
+      return;
+    }
+    this.deliveryActionError.set(null);
+    this.adminService.assignDelivery({ ...this.newDelivery }).subscribe((error) => {
+      if (error) {
+        this.deliveryActionError.set(error);
+        return;
+      }
+      this.newDelivery = { orderId: '', agentId: '', estimatedTimeOfArrival: '' };
+    });
+  }
+
+  deleteDelivery(delId: string): void {
+    this.deliveryActionError.set(null);
+    this.adminService.deleteDelivery(delId).subscribe((error) => {
+      if (error) {
+        this.deliveryActionError.set(error);
+      }
+    });
+  }
 }
+

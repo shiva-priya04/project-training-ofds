@@ -41,16 +41,16 @@
 				<article class="admin-card">
 					<h1>Admin Profile</h1>
 					<div class="profile-row">
-						<span class="profile-avatar">{{ profile.avatar }}</span>
+						<span class="profile-avatar">{{ profile().avatar }}</span>
 						<div>
-							<h2>{{ profile.name }}</h2>
-							<p class="muted">{{ profile.role }}</p>
+							<h2>{{ profile().name }}</h2>
+							<p class="muted">{{ profile().role }}</p>
 						</div>
 					</div>
 					<dl class="profile-details">
-						<div><dt>Email</dt><dd>{{ profile.email }}</dd></div>
-						<div><dt>Phone</dt><dd>{{ profile.phone }}</dd></div>
-						<div><dt>Joined</dt><dd>{{ profile.joined }}</dd></div>
+						<div><dt>Email</dt><dd>{{ profile().email }}</dd></div>
+						<div><dt>Phone</dt><dd>{{ profile().phone }}</dd></div>
+						<div><dt>Joined</dt><dd>{{ profile().joined }}</dd></div>
 					</dl>
 				</article>
 			}
@@ -203,6 +203,30 @@
 			@if (activeTab() === 'delivery') {
 				<article class="admin-card">
 					<h1>Delivery Details</h1>
+					@if (deliveryActionError()) {
+						<div class="alert alert-danger" role="alert">{{ deliveryActionError() }}</div>
+					}
+
+					<form class="admin-form" (ngSubmit)="assignDelivery()">
+						<h3>Assign Delivery</h3>
+						<div class="admin-form__grid">
+							<select class="form-select" name="orderId" [(ngModel)]="newDelivery.orderId" required>
+								<option value="" disabled>Select order</option>
+								@for (order of unassignedOrders; track order.orderNumber) {
+									<option [value]="order.orderNumber">{{ order.orderNumber }} &middot; {{ order.restaurant }}</option>
+								}
+							</select>
+							<select class="form-select" name="agentId" [(ngModel)]="newDelivery.agentId" required>
+								<option value="" disabled>Select agent</option>
+								@for (agent of agents; track agent.agentId) {
+									<option [value]="agent.agentId">{{ agent.agentName }}</option>
+								}
+							</select>
+							<input class="form-control" name="eta" type="datetime-local" [(ngModel)]="newDelivery.estimatedTimeOfArrival" required />
+							<button class="btn icon-btn icon-btn--add" type="submit" aria-label="Assign delivery">✓</button>
+						</div>
+					</form>
+
 					<p class="muted">Orders currently out for delivery.</p>
 					<div class="table-responsive admin-table-wrap">
 						<table class="table admin-table align-middle">
@@ -229,6 +253,40 @@
 								} @empty {
 									<tr>
 										<td colspan="5" class="muted text-center">No active deliveries right now.</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+
+					<h3 class="mt-4">Assigned Deliveries</h3>
+					<div class="table-responsive admin-table-wrap">
+						<table class="table admin-table align-middle">
+							<thead>
+								<tr>
+									<th>Delivery #</th>
+									<th>Order #</th>
+									<th>Agent</th>
+									<th>ETA</th>
+									<th>Status</th>
+									<th class="text-end">Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								@for (delivery of deliveries; track delivery.delId) {
+									<tr>
+										<td class="fw-bold">{{ delivery.delId }}</td>
+										<td>{{ delivery.order.orderId }}</td>
+										<td>{{ delivery.agent.agentId }}</td>
+										<td>{{ delivery.estimatedTimeOfArrival }}</td>
+										<td>{{ delivery.delStatus }}</td>
+										<td class="text-end admin-table__actions">
+											<button class="btn icon-btn icon-btn--delete" type="button" (click)="deleteDelivery(delivery.delId)" aria-label="Delete delivery">✕</button>
+										</td>
+									</tr>
+								} @empty {
+									<tr>
+										<td colspan="6" class="muted text-center">No deliveries assigned yet.</td>
 									</tr>
 								}
 							</tbody>

@@ -1,6 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { OrdersService, TrackedOrder, TrackingStage } from '../../orders.service';
+import { AgentsService } from '../../agents.service';
+import { AuthService } from '../../auth.service';
+import { Delivery, DeliveryService, DeliveryStatus } from '../../delivery.service';
 
 type AgentTab = 'profile' | 'assigned' | 'details' | 'status' | 'my-deliveries';
 
@@ -12,57 +14,117 @@ type AgentTab = 'profile' | 'assigned' | 'details' | 'status' | 'my-deliveries';
 })
 export class Agent {
   readonly activeTab = signal<AgentTab>('profile');
+  readonly actionError = signal<string | null>(null);
 
-  readonly profile = {
-    name: 'Ravi Kumar',
-    agentId: 'AGT-2291',
-    phone: '+91 98450 11223',
-    vehicle: 'Two Wheeler - TN 09 AX 4521',
-    zone: 'T. Nagar & Anna Salai',
-    rating: 4.8,
-    joined: 'June 2024',
-    avatar: '🛵',
-  };
+  readonly profile = computed(() => {
+    const username = this.auth.username();
+    const matchedAgent = this.agentsService.agents().find((agent) => agent.agentName === username);
+    return {
+      name: matchedAgent?.agentName ?? username ?? 'Agent',
+      agentId: matchedAgent?.agentId ?? 'Not assigned yet',
+      phone: matchedAgent?.agentPhoneNo ?? 'Not provided',
+      vehicle: 'Not provided',
+      zone: 'Not assigned',
+      rating: 0,
+      joined: 'Recently',
+      avatar: '🛵',
+    };
+  });
 
-  constructor(private ordersService: OrdersService) {}
-
-  readonly stages: { key: TrackingStage; label: string }[] = [
-    { key: 'preparing', label: 'Preparing' },
-    { key: 'out-for-delivery', label: 'Out for Delivery' },
-    { key: 'delivered', label: 'Delivered' },
-    { key: 'cancelled', label: 'Cancelled' },
-  ];
+  constructor(
+    private agentsService: AgentsService,
+    private deliveryService: DeliveryService,
+    private auth: AuthService
+  ) {
+    this.agentsService.refresh();
+    this.deliveryService.refresh();
+  }
 
   setTab(tab: AgentTab): void {
     this.activeTab.set(tab);
+    this.actionError.set(null);
   }
 
-  get myDeliveries(): TrackedOrder[] {
-    return this.ordersService.orders().filter((order) => order.assignedAgent === this.profile.name);
+  /** All deliveries currently assigned to this logged-in agent. */
+  get myDeliveries(): Delivery[] {
+    const agentId = this.profile().agentId;
+    return this.deliveryService.deliveries().filter((delivery) => delivery.agent?.agentId === agentId);
   }
 
-  get assignedDeliveries(): TrackedOrder[] {
-    return this.myDeliveries.filter(
-      (order) => order.trackingStage === 'preparing' || order.trackingStage === 'out-for-delivery'
+  /** Newly assigned deliveries awaiting an accept/decline decision. */
+  get pendingDeliveries(): Delivery[] {
+    return this.myDeliveries.filter((delivery) => delivery.delStatus === 'ASSIGNED');
+  }
+
+  /** The delivery the agent is currently working on (accepted, en route, etc). */
+  get currentDelivery(): Delivery | undefined {
+    return this.myDeliveries.find(
+      (delivery) => delivery.delStatus === 'ACCEPTED' || delivery.delStatus === 'OUT_FOR_DELIVERY'
     );
   }
 
-  get currentDelivery(): TrackedOrder | undefined {
-    return (
-      this.assignedDeliveries.find((order) => order.trackingStage === 'out-for-delivery') ??
-      this.assignedDeliveries[0]
-    );
+  acceptDelivery(delId: string): void {
+    this.setStatus(delId, 'ACCEPTED');
   }
 
-  updateStatus(stage: TrackingStage): void {
-    if (!this.currentDelivery) {
-      return;
+  declineDelivery(delId: string): void {
+    this.setStatus(delId, 'DECLINED');
+  }
+
+  markOutForDelivery(delId: string): void {
+    this.setStatus(delId, 'OUT_FOR_DELIVERY');
+  }
+
+  markDelivered(delId: string): void {
+    this.setStatus(delId, 'DELIVERED');
+  }
+
+  private setStatus(delId: string, status: DeliveryStatus): void {
+    this.actionError.set(null);
+    const agentId = this.profile().agentId;
+    this.deliveryService.updateStatus(delId, status, agentId).subscribe((error) => {
+      if (error) {
+        this.actionError.set(error);
+      }
+    });
+  }
+
+  statusLabel(status: DeliveryStatus): string {
+    switch (status) {
+      case 'ASSIGNED':
+        return 'Awaiting Response';
+      case 'ACCEPTED':
+        return 'Accepted';
+      case 'DECLINED':
+        return 'Declined';
+      case 'OUT_FOR_DELIVERY':
+        return 'Out for Delivery';
+      case 'DELIVERED':
+        return 'Delivered';
     }
-    this.ordersService.updateStage(this.currentDelivery.orderNumber, stage);
   }
 
-  orderTotal(order: TrackedOrder): number {
-    const subtotal = order.lines.reduce((sum, line) => sum + line.item.price * line.quantity, 0);
-    return subtotal + order.deliveryFee;
+  statusClass(status: DeliveryStatus): string {
+    return 'status-badge--' + status.toLowerCase().replace(/_/g, '-');
+  }
+
+  orderTotal(delivery: Delivery): number {
+    return delivery.order.totalAmt ?? 0;
+  }
+
+  restaurantName(delivery: Delivery): string {
+    return delivery.order.restaurant?.resName ?? delivery.order.restaurant?.resId ?? 'Unknown';
+  }
+
+  customerName(delivery: Delivery): string {
+    return delivery.order.customer?.customerName ?? delivery.order.customer?.customerId ?? 'Unknown';
+  }
+
+  customerPhone(delivery: Delivery): string {
+    return delivery.order.customer?.customerPhoneNo ?? 'N/A';
+  }
+
+  customerAddress(delivery: Delivery): string {
+    return delivery.order.customer?.customerAddress ?? 'Not provided';
   }
 }

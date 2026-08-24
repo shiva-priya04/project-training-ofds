@@ -392,6 +392,50 @@
 	color: #3a3f8a;
 }
 
+.status-badge--assigned {
+	background: rgba(255, 214, 138, 0.35);
+	color: #8a5a12;
+}
+
+.status-badge--accepted {
+	background: rgba(207, 216, 255, 0.6);
+	color: #3a3f8a;
+}
+
+.status-badge--declined {
+	background: rgba(243, 166, 166, 0.25);
+	color: #b0453f;
+}
+
+.accept-btn,
+.decline-btn {
+	font-weight: 700;
+	padding: 8px 16px;
+	border-radius: 999px;
+	border: 1px solid transparent;
+	transition: opacity 0.2s ease;
+}
+
+.accept-btn {
+	background: rgba(127, 201, 160, 0.25);
+	color: #2f7a52;
+	border-color: rgba(127, 201, 160, 0.5);
+}
+
+.accept-btn:hover {
+	opacity: 0.85;
+}
+
+.decline-btn {
+	background: rgba(243, 166, 166, 0.25);
+	color: #b0453f;
+	border-color: rgba(243, 166, 166, 0.5);
+}
+
+.decline-btn:hover {
+	opacity: 0.85;
+}
+
 @media (max-width: 860px) {
 	.agent-shell {
 		flex-direction: column;

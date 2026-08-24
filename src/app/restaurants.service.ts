@@ -19,6 +19,7 @@ interface BackendRestaurant {
   resAddress: string;
   resPhoneNo: string;
   resEmail: string;
+  resType?: 'veg' | 'non-veg';
 }
 
 interface BackendMenuItem {
@@ -73,7 +74,7 @@ export class RestaurantsService {
       cuisine: 'Multi-cuisine',
       rating: 4.0,
       time: '30-40 min',
-      type: 'veg',
+      type: restaurant.resType ?? 'veg',
       items: items.map((item) => ({
         itemId: item.itemId,
         resId: restaurant.resId,
@@ -109,6 +110,7 @@ export class RestaurantsService {
       resAddress: data.area,
       resPhoneNo: '9000000000',
       resEmail: `${resId.toLowerCase()}@krustykrab.com`,
+      resType: data.type ?? 'veg',
     };
     return this.http.post<BackendRestaurant>(`${this.apiUrl}/restaurant/add`, payload).pipe(
       map(() => {

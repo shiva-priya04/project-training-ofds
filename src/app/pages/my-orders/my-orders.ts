@@ -11,7 +11,9 @@ export type OrderStatus = 'placed' | 'delivered' | 'cancelled';
   styleUrl: './my-orders.css',
 })
 export class MyOrders {
-  constructor(private ordersService: OrdersService, private router: Router) {}
+  constructor(private ordersService: OrdersService, private router: Router) {
+    this.ordersService.refresh();
+  }
 
   get orders(): TrackedOrder[] {
     return this.ordersService.orders();
