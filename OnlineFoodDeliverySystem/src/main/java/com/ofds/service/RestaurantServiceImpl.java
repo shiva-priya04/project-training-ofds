@@ -56,11 +56,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 		Restaurant restaurant = restaurantRepository.findById(resId)
 				.orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found with ID: " + resId));
 
-		// Remove order history for this restaurant first so the FK constraints
-		// on orders.resId / orders_menu do not block deletion. Deliveries and
-		// payments tied to those orders are removed too since they reference
-		// the order. Menu items are then cleaned up via cascade+orphanRemoval
-		// when the restaurant itself is deleted.
+		
 		List<Orders> orders = ordersRepository.findByRestaurantResId(resId);
 		for (Orders order : orders) {
 			List<Delivery> deliveries = deliveryRepository.findByOrder_OrderId(order.getOrderId());
